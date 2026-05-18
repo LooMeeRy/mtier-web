@@ -53,6 +53,17 @@ export async function POST(request: Request) {
             });
           }
         }
+
+        // Initialize Default Tiers in Database (Source of Truth)
+        const activeModes = ["PvP", "Bridge"];
+        for (const m of activeModes) {
+          await prisma.tier.upsert({
+            where: { playerId_gamemode: { playerId: player.id, gamemode: m } },
+            update: {},
+            create: { playerId: player.id, gamemode: m, rank: "Iron", mmr: 1000 }
+          });
+        }
+
         return NextResponse.json({ success: true });
 
       case "GET_STATS":
