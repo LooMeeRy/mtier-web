@@ -30,6 +30,7 @@ public class MTierPlugin extends JavaPlugin {
         // Register Commands
         if (getCommand("mtier") != null) {
             getCommand("mtier").setExecutor(new StatsCommand());
+            getCommand("mtier").setTabCompleter(new com.mtier.plugin.commands.CommandCompleter());
         }
 
         // Register Listeners

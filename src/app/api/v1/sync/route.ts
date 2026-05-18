@@ -24,7 +24,12 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { uuid, username, event, metadata, timestamp, mode, mmr } = body;
+    let { uuid, username, event, metadata, timestamp, mode, mmr } = body;
+
+    // Normalize mode name (e.g., pvp -> PvP, bridge -> Bridge)
+    if (mode) {
+        mode = mode.toLowerCase() === 'pvp' ? 'PvP' : mode.charAt(0).toUpperCase() + mode.slice(1).toLowerCase();
+    }
 
     // 2. Handle Events
     switch (event) {
