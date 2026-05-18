@@ -1,6 +1,18 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
+function getRankFromMMR(mmr: number): string {
+    if (mmr >= 4000) return "NetherStar";
+    if (mmr >= 3500) return "Amethyst";
+    if (mmr >= 3000) return "Diamond";
+    if (mmr >= 2500) return "Emerald";
+    if (mmr >= 2000) return "Gold";
+    if (mmr >= 1500) return "Iron";
+    if (mmr >= 1000) return "Copper";
+    if (mmr >= 500) return "Stone";
+    return "Wood";
+}
+
 export async function POST(request: Request) {
   try {
     const authHeader = request.headers.get("authorization");
@@ -12,71 +24,71 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { uuid, username, event, metadata, timestamp } = body;
-
-    console.log(`[Sync] Received ${event} for ${username} (${uuid})`);
+    const { uuid, username, event, metadata, timestamp, mode, mmr } = body;
 
     // 2. Handle Events
     switch (event) {
       case "PLAYER_JOIN":
-        // A. Smart Upsert: Find by UUID first, then by Username
+        // Smart Upsert logic
         let player = await prisma.player.findUnique({ where: { uuid: uuid } });
-
         if (!player) {
-          // If UUID not found, check if username exists (maybe from seed data)
           const existingByUsername = await prisma.player.findUnique({ where: { username: username } });
-          
           if (existingByUsername) {
-            // Link existing record with the new UUID
             player = await prisma.player.update({
               where: { id: existingByUsername.id },
               data: { uuid: uuid, updatedAt: new Date(timestamp) }
             });
           } else {
-            // Create brand new player
             player = await prisma.player.create({
-              data: {
-                uuid: uuid,
-                username: username,
-                createdAt: new Date(timestamp),
-                updatedAt: new Date(timestamp)
-              }
+              data: { uuid: uuid, username: username, createdAt: new Date(timestamp), updatedAt: new Date(timestamp) }
             });
           }
         } else {
-          // Player exists with UUID, just update username/timestamp
           player = await prisma.player.update({
             where: { id: player.id },
             data: { username: username, updatedAt: new Date(timestamp) }
           });
         }
 
-        // B. Initialize Default Tiers (Wood Rank) for all modes if they don't exist
+        // Initialize Default Tiers
         const activeModes = ["PvP", "Bridge"];
-        for (const mode of activeModes) {
+        for (const m of activeModes) {
           await prisma.tier.upsert({
-            where: { playerId_gamemode: { playerId: player.id, gamemode: mode } },
-            update: {}, // Don't change if exists
-            create: {
-              playerId: player.id,
-              gamemode: mode,
-              rank: "Wood",
-              mmr: 0
-            }
+            where: { playerId_gamemode: { playerId: player.id, gamemode: m } },
+            update: {},
+            create: { playerId: player.id, gamemode: m, rank: "Wood", mmr: 0 }
           });
         }
-        break;
+        return NextResponse.json({ success: true });
 
-      case "MATCH_END":
-        // Future: Handle match results and MMR updates
-        // Example: await prisma.match.create({ data: { ... } })
-        break;
+      case "GET_STATS":
+        const pStats = await prisma.player.findUnique({
+          where: { username: username },
+          include: { tiers: true }
+        });
+        if (!pStats) return NextResponse.json({ error: "Not found" }, { status: 404 });
+        
+        const statsMap: Record<string, any> = {};
+        pStats.tiers.forEach(t => {
+            statsMap[t.gamemode] = { mmr: t.mmr, rank: t.rank };
+        });
+        return NextResponse.json({ stats: statsMap });
+
+      case "UPDATE_MMR":
+        const targetPlayer = await prisma.player.findUnique({ where: { username: username } });
+        if (!targetPlayer) return NextResponse.json({ error: "Player not found" }, { status: 404 });
+
+        const newRank = getRankFromMMR(mmr);
+        await prisma.tier.upsert({
+            where: { playerId_gamemode: { playerId: targetPlayer.id, gamemode: mode } },
+            update: { mmr: mmr, rank: newRank },
+            create: { playerId: targetPlayer.id, gamemode: mode, mmr: mmr, rank: newRank }
+        });
+        return NextResponse.json({ success: true });
 
       default:
         return NextResponse.json({ error: "Unknown event type" }, { status: 400 });
     }
-
-    return NextResponse.json({ success: true, message: `Event ${event} processed` });
   } catch (error) {
     console.error("[Sync Error]", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

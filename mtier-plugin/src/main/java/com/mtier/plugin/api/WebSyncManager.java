@@ -11,6 +11,9 @@ import java.util.concurrent.CompletableFuture;
 
 public class WebSyncManager {
 
+    public record PlayerData(Map<String, GamemodeStats> stats) {}
+    public record GamemodeStats(int mmr, String rank) {}
+
     private final HttpClient httpClient;
     private final Gson gson;
     private final String apiUrl;
@@ -62,6 +65,62 @@ public class WebSyncManager {
         } catch (Exception e) {
             MTierPlugin.getInstance().getLogger().severe("Configuration Error: API URL might be invalid: " + apiUrl);
             return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    public CompletableFuture<PlayerData> fetchPlayerData(String uuid, String username) {
+        Map<String, Object> payload = Map.of(
+            "uuid", uuid,
+            "username", username,
+            "event", "GET_STATS",
+            "timestamp", System.currentTimeMillis()
+        );
+
+        String json = gson.toJson(payload);
+
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(apiUrl))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + apiKey)
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+            return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200) {
+                        return gson.fromJson(response.body(), PlayerData.class);
+                    }
+                    return null;
+                });
+        } catch (Exception e) {
+            return CompletableFuture.completedFuture(null);
+        }
+    }
+
+    public CompletableFuture<Boolean> updatePlayerMMR(String targetName, String mode, int mmr) {
+        Map<String, Object> payload = Map.of(
+            "username", targetName,
+            "mode", mode,
+            "mmr", mmr,
+            "event", "UPDATE_MMR",
+            "timestamp", System.currentTimeMillis()
+        );
+
+        String json = gson.toJson(payload);
+
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(apiUrl))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + apiKey)
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+            return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> response.statusCode() == 200);
+        } catch (Exception e) {
+            return CompletableFuture.completedFuture(false);
         }
     }
 }

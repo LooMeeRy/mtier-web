@@ -2,11 +2,15 @@ name: MTierPlugin
 version: '${version}'
 main: com.mtier.plugin.MTierPlugin
 api-version: '1.21'
+softdepend: [PlaceholderAPI]
 commands:
   mtier:
-    description: View your player statistics.
-    usage: /mtier
+    description: View or manage player statistics.
+    usage: /mtier [reload|test|setmmr]
 permissions:
   mtier.use:
-    description: Allows use of the /mtier command.
+    description: Allows use of the basic /mtier command.
     default: true
+  mtier.admin:
+    description: Allows management commands like reload and setmmr.
+    default: op

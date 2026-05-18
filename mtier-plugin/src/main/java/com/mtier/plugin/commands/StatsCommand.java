@@ -1,5 +1,6 @@
 package com.mtier.plugin.commands;
 
+import com.mtier.plugin.MTierPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -11,32 +12,65 @@ public class StatsCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (args.length > 0 && args[0].equalsIgnoreCase("test")) {
+        // /mtier reload
+        if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
             if (!sender.hasPermission("mtier.admin")) {
-                sender.sendMessage(ChatColor.RED + "You need mtier.admin permission to test.");
+                sender.sendMessage(ChatColor.RED + "No permission.");
                 return true;
             }
-            sender.sendMessage(ChatColor.YELLOW + "Manually triggering sync test...");
-            new com.mtier.plugin.api.WebSyncManager().syncPlayerData(
+            MTierPlugin.getInstance().reloadPluginConfig();
+            sender.sendMessage(ChatColor.GREEN + "MTier configuration reloaded.");
+            return true;
+        }
+
+        // /mtier test
+        if (args.length > 0 && args[0].equalsIgnoreCase("test")) {
+            if (!sender.hasPermission("mtier.admin")) {
+                sender.sendMessage(ChatColor.RED + "No permission.");
+                return true;
+            }
+            sender.sendMessage(ChatColor.YELLOW + "Triggering sync test...");
+            MTierPlugin.getInstance().getSyncManager().syncPlayerData(
                 "test-uuid", "TestPlayer", "PLAYER_JOIN", java.util.Map.of("test", true)
             );
-            sender.sendMessage(ChatColor.GREEN + "Test request sent. Check server console for results.");
+            return true;
+        }
+
+        // /mtier setmmr <player> <mode> <amount>
+        if (args.length >= 4 && args[0].equalsIgnoreCase("setmmr")) {
+            if (!sender.hasPermission("mtier.admin")) {
+                sender.sendMessage(ChatColor.RED + "No permission.");
+                return true;
+            }
+            String target = args[1];
+            String mode = args[2];
+            int amount;
+            try {
+                amount = Integer.parseInt(args[3]);
+            } catch (NumberFormatException e) {
+                sender.sendMessage(ChatColor.RED + "Invalid amount.");
+                return true;
+            }
+
+            sender.sendMessage(ChatColor.YELLOW + "Updating MMR for " + target + "...");
+            MTierPlugin.getInstance().getSyncManager().updatePlayerMMR(target, mode, amount).thenAccept(success -> {
+                if (success) {
+                    sender.sendMessage(ChatColor.GREEN + "Successfully updated MMR for " + target);
+                } else {
+                    sender.sendMessage(ChatColor.RED + "Failed to update MMR. Check console.");
+                }
+            });
             return true;
         }
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ChatColor.RED + "This command can only be used by players.");
+            sender.sendMessage(ChatColor.RED + "Players only.");
             return true;
         }
 
-        if (!player.hasPermission("mtier.use")) {
-            player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
-            return true;
-        }
-
-        player.sendMessage(ChatColor.GOLD + "--- MTier Pro Status ---");
-        player.sendMessage(ChatColor.GRAY + "Your stats are being synchronized with the web dashboard.");
-        player.sendMessage(ChatColor.YELLOW + "View your full profile at: " + ChatColor.WHITE + ChatColor.UNDERLINE + "http://localhost:3000/player/" + player.getName());
+        player.sendMessage(ChatColor.GOLD + "--- MTier Pro v2.0 ---");
+        player.sendMessage(ChatColor.GRAY + "Your stats are synced with the web dashboard.");
+        player.sendMessage(ChatColor.YELLOW + "URL: " + ChatColor.WHITE + "https://loona-tier.vercel.app/player/" + player.getName());
 
         return true;
     }
