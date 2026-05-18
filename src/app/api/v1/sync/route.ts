@@ -13,28 +13,32 @@ function getRankFromMMR(mmr: number): string {
     return "Wood";
 }
 
+// Simple Elo calculation helper
+function calculateMmrChange(winnerMmr: number, loserMmr: number): number {
+    const kFactor = 32;
+    const expectedScore = 1 / (1 + Math.pow(10, (loserMmr - winnerMmr) / 400));
+    return Math.round(kFactor * (1 - expectedScore));
+}
+
 export async function POST(request: Request) {
   try {
     const authHeader = request.headers.get("authorization");
     const secret = process.env.MINECRAFT_PLUGIN_SECRET;
 
-    // 1. Verify Secret Key
     if (!secret || authHeader !== `Bearer ${secret}`) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
-    let { uuid, username, event, metadata, timestamp, mode, mmr } = body;
+    let { event, gamemode, matchType, duration, participants, metadata, timestamp, uuid, username, mode, mmr } = body;
 
-    // Normalize mode name (e.g., pvp -> PvP, bridge -> Bridge)
-    if (mode) {
-        mode = mode.toLowerCase() === 'pvp' ? 'PvP' : mode.charAt(0).toUpperCase() + mode.slice(1).toLowerCase();
+    // Normalize gamemode
+    if (gamemode) {
+        gamemode = gamemode.toLowerCase() === 'pvp' ? 'PvP' : gamemode.charAt(0).toUpperCase() + gamemode.slice(1).toLowerCase();
     }
 
-    // 2. Handle Events
     switch (event) {
       case "PLAYER_JOIN":
-        // Smart Upsert logic
         let player = await prisma.player.findUnique({ where: { uuid: uuid } });
         if (!player) {
           const existingByUsername = await prisma.player.findUnique({ where: { username: username } });
@@ -48,21 +52,6 @@ export async function POST(request: Request) {
               data: { uuid: uuid, username: username, createdAt: new Date(timestamp), updatedAt: new Date(timestamp) }
             });
           }
-        } else {
-          player = await prisma.player.update({
-            where: { id: player.id },
-            data: { username: username, updatedAt: new Date(timestamp) }
-          });
-        }
-
-        // Initialize Default Tiers
-        const activeModes = ["PvP", "Bridge"];
-        for (const m of activeModes) {
-          await prisma.tier.upsert({
-            where: { playerId_gamemode: { playerId: player.id, gamemode: m } },
-            update: {},
-            create: { playerId: player.id, gamemode: m, rank: "Wood", mmr: 0 }
-          });
         }
         return NextResponse.json({ success: true });
 
@@ -79,23 +68,55 @@ export async function POST(request: Request) {
         });
         return NextResponse.json({ stats: statsMap });
 
-      case "UPDATE_MMR":
-        const targetPlayer = await prisma.player.findUnique({ where: { username: username } });
-        if (!targetPlayer) return NextResponse.json({ error: "Player not found" }, { status: 404 });
+      case "SUBMIT_MATCH":
+        // 1. Process each participant
+        for (const p of participants) {
+            const dbPlayer = await prisma.player.findUnique({ where: { uuid: p.uuid }, include: { tiers: true } });
+            if (!dbPlayer) continue;
 
-        const newRank = getRankFromMMR(mmr);
-        await prisma.tier.upsert({
-            where: { playerId_gamemode: { playerId: targetPlayer.id, gamemode: mode } },
-            update: { mmr: mmr, rank: newRank },
-            create: { playerId: targetPlayer.id, gamemode: mode, mmr: mmr, rank: newRank }
-        });
+            let currentTier = dbPlayer.tiers.find(t => t.gamemode === gamemode);
+            if (!currentTier) {
+                currentTier = await prisma.tier.create({
+                    data: { playerId: dbPlayer.id, gamemode: gamemode, mmr: 1000, rank: "Iron" }
+                });
+            }
+
+            // Simple win/loss MMR change for now
+            // Future: Implement complex Multi-player Elo here based on 'p.placement'
+            const change = p.winner ? 25 : -15;
+            const newMmr = Math.max(0, currentTier.mmr + change);
+
+            await prisma.tier.update({
+                where: { id: currentTier.id },
+                data: { mmr: newMmr, rank: getRankFromMMR(newMmr) }
+            });
+
+            // 2. Log Match for this player
+            await prisma.match.create({
+                data: {
+                    playerId: dbPlayer.id,
+                    gamemode: gamemode,
+                    matchType: matchType,
+                    result: p.winner ? "WIN" : "LOSS",
+                    mmrChange: change,
+                    opponent: "Multiplayer", // Legacy field
+                    duration: duration,
+                    detailsJson: JSON.stringify({
+                        placement: p.placement,
+                        personalStats: p.stats,
+                        allParticipants: participants.map((all: any) => ({ name: all.name, winner: all.winner })),
+                        metadata: metadata
+                    })
+                }
+            });
+        }
         return NextResponse.json({ success: true });
 
       default:
-        return NextResponse.json({ error: "Unknown event type" }, { status: 400 });
+        return NextResponse.json({ error: "Unknown event" }, { status: 400 });
     }
   } catch (error) {
     console.error("[Sync Error]", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }

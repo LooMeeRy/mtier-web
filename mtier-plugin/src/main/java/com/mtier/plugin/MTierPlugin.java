@@ -1,5 +1,7 @@
 package com.mtier.plugin;
 
+import com.mtier.plugin.api.MTierAPI;
+import com.mtier.plugin.api.MTierAPIImpl;
 import com.mtier.plugin.api.WebSyncManager;
 import com.mtier.plugin.commands.StatsCommand;
 import com.mtier.plugin.listeners.PlayerListener;
@@ -15,6 +17,7 @@ public class MTierPlugin extends JavaPlugin {
     private static MTierPlugin instance;
     private Logger logger;
     private WebSyncManager syncManager;
+    private MTierAPI api;
     private final Map<UUID, WebSyncManager.PlayerData> playerCache = new HashMap<>();
 
     @Override
@@ -26,6 +29,7 @@ public class MTierPlugin extends JavaPlugin {
         saveDefaultConfig();
         
         this.syncManager = new WebSyncManager();
+        this.api = new MTierAPIImpl();
 
         // Register Commands
         if (getCommand("mtier") != null) {
@@ -42,16 +46,20 @@ public class MTierPlugin extends JavaPlugin {
             logger.info("PlaceholderAPI expansion registered.");
         }
 
-        logger.info("MTier Pro Plugin v2.0 has been enabled!");
+        logger.info("MTier Super-Core v3.0 has been enabled!");
     }
 
     @Override
     public void onDisable() {
-        logger.info("MTier Pro Plugin has been disabled.");
+        logger.info("MTier Super-Core has been disabled.");
     }
 
     public static MTierPlugin getInstance() {
         return instance;
+    }
+
+    public static MTierAPI getAPI() {
+        return instance.api;
     }
 
     public WebSyncManager getSyncManager() {
@@ -61,6 +69,7 @@ public class MTierPlugin extends JavaPlugin {
     public void reloadPluginConfig() {
         reloadConfig();
         this.syncManager = new WebSyncManager();
+        this.api = new MTierAPIImpl();
     }
 
     public Map<UUID, WebSyncManager.PlayerData> getPlayerCache() {

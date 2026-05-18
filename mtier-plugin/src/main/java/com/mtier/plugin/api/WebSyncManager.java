@@ -2,6 +2,7 @@ package com.mtier.plugin.api;
 
 import com.google.gson.Gson;
 import com.mtier.plugin.MTierPlugin;
+import com.mtier.plugin.api.models.MatchData;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -27,8 +28,6 @@ public class WebSyncManager {
     }
 
     public CompletableFuture<Void> syncPlayerData(String uuid, String username, String eventType, Map<String, Object> metadata) {
-        MTierPlugin.getInstance().getLogger().info("Attempting to sync " + eventType + " for " + username + " to " + apiUrl);
-        
         Map<String, Object> payload = Map.of(
             "uuid", uuid,
             "username", username,
@@ -37,35 +36,7 @@ public class WebSyncManager {
             "timestamp", System.currentTimeMillis()
         );
 
-        String json = gson.toJson(payload);
-
-        try {
-            HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(apiUrl))
-                .header("Content-Type", "application/json")
-                .header("Authorization", "Bearer " + apiKey)
-                .POST(HttpRequest.BodyPublishers.ofString(json))
-                .build();
-
-            return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenAccept(response -> {
-                    if (response.statusCode() == 200) {
-                        MTierPlugin.getInstance().getLogger().info("Successfully synced " + username + " (Status: " + response.statusCode() + ")");
-                    } else {
-                        MTierPlugin.getInstance().getLogger().warning("Failed to sync " + username + ". Server returned Status: " + response.statusCode() + " - Body: " + response.body());
-                    }
-                })
-                .exceptionally(ex -> {
-                    MTierPlugin.getInstance().getLogger().severe("Network Error while syncing " + username + ": " + ex.getMessage());
-                    if (ex.getCause() != null) {
-                        MTierPlugin.getInstance().getLogger().severe("Cause: " + ex.getCause().getMessage());
-                    }
-                    return null;
-                });
-        } catch (Exception e) {
-            MTierPlugin.getInstance().getLogger().severe("Configuration Error: API URL might be invalid: " + apiUrl);
-            return CompletableFuture.failedFuture(e);
-        }
+        return sendAsyncRequest(payload).thenAccept(res -> {});
     }
 
     public CompletableFuture<PlayerData> fetchPlayerData(String uuid, String username) {
@@ -76,26 +47,10 @@ public class WebSyncManager {
             "timestamp", System.currentTimeMillis()
         );
 
-        String json = gson.toJson(payload);
-
-        try {
-            HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(apiUrl))
-                .header("Content-Type", "application/json")
-                .header("Authorization", "Bearer " + apiKey)
-                .POST(HttpRequest.BodyPublishers.ofString(json))
-                .build();
-
-            return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> {
-                    if (response.statusCode() == 200) {
-                        return gson.fromJson(response.body(), PlayerData.class);
-                    }
-                    return null;
-                });
-        } catch (Exception e) {
-            return CompletableFuture.completedFuture(null);
-        }
+        return sendAsyncRequest(payload).thenApply(body -> {
+            if (body != null) return gson.fromJson(body, PlayerData.class);
+            return null;
+        });
     }
 
     public CompletableFuture<Boolean> updatePlayerMMR(String targetName, String mode, int mmr) {
@@ -107,8 +62,28 @@ public class WebSyncManager {
             "timestamp", System.currentTimeMillis()
         );
 
-        String json = gson.toJson(payload);
+        return sendAsyncRequest(payload).thenApply(body -> body != null);
+    }
 
+    /**
+     * New method for submitting complex match results.
+     */
+    public CompletableFuture<Boolean> submitMatch(MatchData match) {
+        Map<String, Object> payload = Map.of(
+            "event", "SUBMIT_MATCH",
+            "gamemode", match.getGamemode(),
+            "matchType", match.getMatchType(),
+            "duration", match.getDuration(),
+            "participants", match.getParticipants(),
+            "metadata", match.getGlobalMetadata(),
+            "timestamp", System.currentTimeMillis()
+        );
+
+        return sendAsyncRequest(payload).thenApply(body -> body != null);
+    }
+
+    private CompletableFuture<String> sendAsyncRequest(Object payload) {
+        String json = gson.toJson(payload);
         try {
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(apiUrl))
@@ -118,9 +93,17 @@ public class WebSyncManager {
                 .build();
 
             return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(response -> response.statusCode() == 200);
+                .thenApply(response -> {
+                    if (response.statusCode() == 200) return response.body();
+                    MTierPlugin.getInstance().getLogger().warning("API Error (" + response.statusCode() + "): " + response.body());
+                    return null;
+                })
+                .exceptionally(ex -> {
+                    MTierPlugin.getInstance().getLogger().severe("Network Error: " + ex.getMessage());
+                    return null;
+                });
         } catch (Exception e) {
-            return CompletableFuture.completedFuture(false);
+            return CompletableFuture.completedFuture(null);
         }
     }
 }
