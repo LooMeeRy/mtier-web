@@ -4,6 +4,7 @@ import com.mtier.plugin.MTierPlugin;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
+import java.util.Map;
 
 public class PlaceholderManager extends PlaceholderExpansion {
 
@@ -39,10 +40,17 @@ public class PlaceholderManager extends PlaceholderExpansion {
         if (parts.length < 2) return null;
 
         String type = parts[0].toLowerCase(); // mmr or rank
-        String rawMode = parts[1].toLowerCase();
-        String mode = rawMode.equals("pvp") ? "PvP" : rawMode.substring(0, 1).toUpperCase() + rawMode.substring(1);
+        String requestedMode = parts[1].toLowerCase();
 
-        WebSyncManager.GamemodeStats modeStats = data.stats().get(mode);
+        // Find the mode in cache case-insensitively
+        WebSyncManager.GamemodeStats modeStats = null;
+        for (Map.Entry<String, WebSyncManager.GamemodeStats> entry : data.stats().entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(requestedMode)) {
+                modeStats = entry.getValue();
+                break;
+            }
+        }
+
         if (modeStats == null) return "---";
 
         if (type.equals("mmr")) {
