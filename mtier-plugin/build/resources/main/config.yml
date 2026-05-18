@@ -1,0 +1,10 @@
+# MTier Pro - Plugin Configuration
+
+# The URL of your MTier Web Application API
+api:
+  url: "http://localhost:3000/api/v1/sync"
+  # Security key to authorize requests (must match the web app's SECRET_KEY)
+  key: "d1b5f0e4-8569-4be7-928a-6f2c262eea06"
+
+# How often to check for player updates in seconds (optional)
+sync-interval: 300

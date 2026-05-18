@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Player {
+  id           String        @id @default(cuid())
+  username     String        @unique
+  uuid         String?       @unique
+  tiers        Tier[]
+  matches      Match[]
+  achievements Achievement[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Tier {
+  id          String   @id @default(cuid())
+  gamemode    String
+  rank        String   // Primary rank name (e.g., Wood, Stone, ..., NetherStar)
+  mmr         Int      @default(0)
+  winsAfterNS Int      @default(0) // Used for stars when rank is NetherStar
+  player      Player   @relation(fields: [playerId], references: [id])
+  playerId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([playerId, gamemode])
+}
+
+model Match {
+  id          String   @id @default(cuid())
+  gamemode    String
+  matchType   String   @default("SOLO") // SOLO, DOUBLE, TEAMS
+  result      String   // WIN, LOSS
+  mmrChange   Int
+  opponent    String   // Primary opponent (legacy field)
+  map         String?
+  duration    Int      @default(300) // Duration in seconds
+  
+  // JSON field for detailed team stats
+  // Format: { allies: [{name, kills, deaths, goals}], enemies: [{name, kills, deaths, goals}] }
+  detailsJson String   @default("{}") 
+  
+  player      Player   @relation(fields: [playerId], references: [id])
+  playerId    String
+  createdAt   DateTime @default(now())
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String
+  icon        String   // Minecraft item ID
+  players     Player[]
+  createdAt   DateTime @default(now())
+}

@@ -1,0 +1,12 @@
+name: MTierPlugin
+version: '1.0-SNAPSHOT'
+main: com.mtier.plugin.MTierPlugin
+api-version: '1.21'
+commands:
+  mtier:
+    description: View your player statistics.
+    usage: /mtier
+permissions:
+  mtier.use:
+    description: Allows use of the /mtier command.
+    default: true
