@@ -39,7 +39,8 @@ public class PlaceholderManager extends PlaceholderExpansion {
         if (parts.length < 2) return null;
 
         String type = parts[0].toLowerCase(); // mmr or rank
-        String mode = parts[1].substring(0, 1).toUpperCase() + parts[1].substring(1).toLowerCase(); // pvp -> PvP, bridge -> Bridge
+        String rawMode = parts[1].toLowerCase();
+        String mode = rawMode.equals("pvp") ? "PvP" : rawMode.substring(0, 1).toUpperCase() + rawMode.substring(1);
 
         WebSyncManager.GamemodeStats modeStats = data.stats().get(mode);
         if (modeStats == null) return "---";
