@@ -13,7 +13,7 @@ import java.util.List;
 
 public class CommandCompleter implements TabCompleter {
 
-    private final List<String> SUB_COMMANDS = Arrays.asList("reload", "test", "setmmr");
+    private final List<String> SUB_COMMANDS = Arrays.asList("reload", "test", "setmmr", "play");
     private final List<String> MODES = Arrays.asList("PvP", "Bridge");
 
     @Override

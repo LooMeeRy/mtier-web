@@ -1,10 +1,23 @@
-# MTier Pro - Plugin Configuration
+# MTier Pro - Super-Core Configuration
 
 # The URL of your MTier Web Application API
 api:
-  url: "http://localhost:3000/api/v1/sync"
-  # Security key to authorize requests (must match the web app's SECRET_KEY)
+  url: "https://loona-tier.vercel.app/api/v1/sync"
+  # Security key to authorize requests (must match the web app's MINECRAFT_PLUGIN_SECRET)
   key: "d1b5f0e4-8569-4be7-928a-6f2c262eea06"
 
 # How often to check for player updates in seconds (optional)
 sync-interval: 300
+
+# ==========================================
+# CHANGELOG / VERSION HISTORY
+# ==========================================
+# v1.0: Initial release with basic sync.
+# v2.0: Added PlaceholderAPI support and Admin commands.
+# v3.0 (CURRENT): 
+#   - Super-Core Transformation: Modular API for multiple gamemodes.
+#   - Added GUI Selector Menu (/mtier).
+#   - Added 'play' sub-command and Tab Completion fix.
+#   - Flexible MatchData for Team/FFA support.
+#   - Fixed default API URL to production.
+# ==========================================
