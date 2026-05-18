@@ -42,6 +42,9 @@ public class RoomBrowserMenu {
                 if (data != null && data.stats().containsKey("PvP")) {
                     lore.add("§7MMR: §f" + data.stats().get("PvP").mmr());
                     lore.add("§7Rank: §6" + data.stats().get("PvP").rank());
+                } else {
+                    lore.add("§7MMR: §f1000");
+                    lore.add("§7Rank: §fIron");
                 }
                 lore.add("");
                 lore.add(room.isFull() ? "§c§lFULL" : "§a§lCLICK TO JOIN");

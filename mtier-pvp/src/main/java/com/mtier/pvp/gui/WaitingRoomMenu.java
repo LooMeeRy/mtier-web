@@ -61,6 +61,27 @@ public class WaitingRoomMenu {
     }
 
     private void setupSide(Inventory inv, Player p, boolean ready, int headSlot, int[] frame) {
+        if (p == null) {
+            // Placeholder when no player is in the slot
+            ItemStack waiting = new ItemStack(Material.BARRIER);
+            ItemMeta meta = waiting.getItemMeta();
+            if (meta != null) {
+                meta.setDisplayName("§8Waiting for opponent...");
+                waiting.setItemMeta(meta);
+            }
+            inv.setItem(headSlot, waiting);
+            
+            // Red frame for empty side
+            ItemStack frameItem = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+            ItemMeta frameMeta = frameItem.getItemMeta();
+            if (frameMeta != null) {
+                frameMeta.setDisplayName(" ");
+                frameItem.setItemMeta(frameMeta);
+            }
+            for (int slot : frame) inv.setItem(slot, frameItem);
+            return;
+        }
+
         // Head
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) head.getItemMeta();
@@ -76,7 +97,7 @@ public class WaitingRoomMenu {
                 lore.add("§7Rank: §6" + data.stats().get("PvP").rank());
             } else {
                 lore.add("§7MMR: §f1000");
-                lore.add("§7Rank: §8Wood");
+                lore.add("§7Rank: §fIron");
             }
             meta.setLore(lore);
             head.setItemMeta(meta);
