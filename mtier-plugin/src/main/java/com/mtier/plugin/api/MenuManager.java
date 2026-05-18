@@ -28,6 +28,10 @@ public class MenuManager implements Listener {
         registeredModes.put(id, new GamemodeEntry(displayName, icon, action));
     }
 
+    public List<String> getRegisteredIds() {
+        return new ArrayList<>(registeredModes.keySet());
+    }
+
     public void openMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 27, menuTitle);
 
