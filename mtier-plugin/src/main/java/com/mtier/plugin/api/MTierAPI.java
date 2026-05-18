@@ -27,4 +27,14 @@ public interface MTierAPI {
      * Manually update a player's MMR for a specific gamemode.
      */
     CompletableFuture<Boolean> updatePlayerMMR(String username, String gamemode, int newMmr);
+
+    /**
+     * Register a new gamemode for the selector GUI.
+     */
+    void registerGamemode(String id, String displayName, org.bukkit.Material icon, java.util.function.Consumer<org.bukkit.entity.Player> action);
+
+    /**
+     * Open the gamemode selector GUI for a player.
+     */
+    void openSelector(org.bukkit.entity.Player player);
 }

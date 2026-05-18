@@ -2,6 +2,7 @@ package com.mtier.plugin;
 
 import com.mtier.plugin.api.MTierAPI;
 import com.mtier.plugin.api.MTierAPIImpl;
+import com.mtier.plugin.api.MenuManager;
 import com.mtier.plugin.api.WebSyncManager;
 import com.mtier.plugin.commands.StatsCommand;
 import com.mtier.plugin.listeners.PlayerListener;
@@ -17,6 +18,7 @@ public class MTierPlugin extends JavaPlugin {
     private static MTierPlugin instance;
     private Logger logger;
     private WebSyncManager syncManager;
+    private MenuManager menuManager;
     private MTierAPI api;
     private final Map<UUID, WebSyncManager.PlayerData> playerCache = new HashMap<>();
 
@@ -29,6 +31,7 @@ public class MTierPlugin extends JavaPlugin {
         saveDefaultConfig();
         
         this.syncManager = new WebSyncManager();
+        this.menuManager = new MenuManager();
         this.api = new MTierAPIImpl();
 
         // Register Commands
@@ -39,6 +42,7 @@ public class MTierPlugin extends JavaPlugin {
 
         // Register Listeners
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+        getServer().getPluginManager().registerEvents(this.menuManager, this);
 
         // Register Placeholders
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
@@ -66,9 +70,14 @@ public class MTierPlugin extends JavaPlugin {
         return syncManager;
     }
 
+    public MenuManager getMenuManager() {
+        return menuManager;
+    }
+
     public void reloadPluginConfig() {
         reloadConfig();
         this.syncManager = new WebSyncManager();
+        this.menuManager = new MenuManager();
         this.api = new MTierAPIImpl();
     }
 

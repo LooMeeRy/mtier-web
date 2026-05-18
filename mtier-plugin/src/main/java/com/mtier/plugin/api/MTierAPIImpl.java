@@ -21,4 +21,14 @@ public class MTierAPIImpl implements MTierAPI {
     public CompletableFuture<Boolean> updatePlayerMMR(String username, String gamemode, int newMmr) {
         return MTierPlugin.getInstance().getSyncManager().updatePlayerMMR(username, gamemode, newMmr);
     }
+
+    @Override
+    public void registerGamemode(String id, String displayName, org.bukkit.Material icon, java.util.function.Consumer<org.bukkit.entity.Player> action) {
+        MTierPlugin.getInstance().getMenuManager().registerMode(id, displayName, icon, action);
+    }
+
+    @Override
+    public void openSelector(org.bukkit.entity.Player player) {
+        MTierPlugin.getInstance().getMenuManager().openMenu(player);
+    }
 }
