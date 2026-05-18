@@ -1,0 +1,6 @@
+name: MTierPvP
+version: '1.0-SNAPSHOT'
+main: com.mtier.pvp.MTierPvP
+api-version: '1.21'
+depend: [MTierPlugin]
+description: The official PvP gamemode for MTier Pro.
