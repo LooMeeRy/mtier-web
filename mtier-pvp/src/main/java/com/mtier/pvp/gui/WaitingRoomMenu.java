@@ -96,8 +96,8 @@ public class WaitingRoomMenu {
                 lore.add("§7MMR: §f" + data.stats().get("PvP").mmr());
                 lore.add("§7Rank: §6" + data.stats().get("PvP").rank());
             } else {
-                lore.add("§7MMR: §8N/A (Syncing...)");
-                lore.add("§7Rank: §8Unknown");
+                lore.add("§7MMR: §f0");
+                lore.add("§7Rank: §8Wood");
             }
             meta.setLore(lore);
             head.setItemMeta(meta);

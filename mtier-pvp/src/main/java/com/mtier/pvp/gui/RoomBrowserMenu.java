@@ -43,8 +43,8 @@ public class RoomBrowserMenu {
                     lore.add("§7MMR: §f" + data.stats().get("PvP").mmr());
                     lore.add("§7Rank: §6" + data.stats().get("PvP").rank());
                 } else {
-                    lore.add("§7MMR: §8N/A");
-                    lore.add("§7Rank: §8Unknown");
+                    lore.add("§7MMR: §f0");
+                    lore.add("§7Rank: §8Wood");
                 }
                 lore.add("");
                 lore.add(room.isFull() ? "§c§lFULL" : "§a§lCLICK TO JOIN");
@@ -54,11 +54,12 @@ public class RoomBrowserMenu {
             inv.setItem(i, head);
         }
 
-        // Navigation & Create
+        // Navigation & Create & Refresh
         if (page > 0) inv.setItem(45, createItem(Material.ARROW, "§7« Previous Page"));
         if ((page + 1) * 45 < rooms.size()) inv.setItem(53, createItem(Material.ARROW, "§7Next Page »"));
 
         inv.setItem(49, createItem(Material.NETHER_STAR, "§a§lCREATE ROOM"));
+        inv.setItem(50, createItem(Material.SUNFLOWER, "§e§lREFRESH LIST"));
         inv.setItem(48, createItem(Material.BARRIER, "§c« Back to Menu"));
 
         player.openInventory(inv);

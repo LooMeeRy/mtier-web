@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class PvPListener implements Listener {
@@ -52,16 +53,20 @@ public class PvPListener implements Listener {
         // 3. Handle Browser Menu
         else if (title.contains(browserMenu.getTitle())) {
             if (item.getType() == Material.NETHER_STAR) {
-                RoomManager.DuelRoom room = MTierPvP.getInstance().getRoomManager().createRoom(player);
+                MTierPvP.getInstance().getRoomManager().createRoom(player);
                 waitingRoomMenu.open(player, player, null, false, false);
+            } else if (item.getType() == Material.SUNFLOWER) {
+                browserMenu.open(player, MTierPvP.getInstance().getRoomManager().getAvailableRooms(), 0);
             } else if (item.getType() == Material.BARRIER) {
                 mainMenu.open(player);
             } else if (item.getType() == Material.PLAYER_HEAD) {
-                // Join Room Logic
                 String ownerName = item.getItemMeta().getDisplayName().replace("'s Room", "").substring(4);
-                // Simple lookup for demo
                 for (RoomManager.DuelRoom r : MTierPvP.getInstance().getRoomManager().getAvailableRooms()) {
-                    if (r.getOwner().getName().equals(ownerName) && !r.isFull()) {
+                    if (r.getOwner().getName().equals(ownerName)) {
+                        if (r.isFull()) {
+                            player.sendMessage("§6§lMTier §8» §cThis room is already full!");
+                            return;
+                        }
                         MTierPvP.getInstance().getRoomManager().joinRoom(player, r);
                         refreshWaitingRoom(r);
                         return;
@@ -76,77 +81,56 @@ public class PvPListener implements Listener {
             if (room == null) return;
 
             if (item.getType() == Material.GREEN_WOOL) {
-                // Set Ready
-                if (room.getOwner().equals(player)) room.setReadyOwner(true);
-                else room.setReadyChallenger(true);
+                if (room.getOwner().getUniqueId().equals(player.getUniqueId())) room.setReadyOwner(true);
+                else if (room.getChallenger() != null && room.getChallenger().getUniqueId().equals(player.getUniqueId())) room.setReadyChallenger(true);
                 refreshWaitingRoom(room);
             } else if (item.getType() == Material.YELLOW_WOOL) {
-                // Unready
-                if (room.getOwner().equals(player)) room.setReadyOwner(false);
-                else room.setReadyChallenger(false);
+                if (room.getOwner().getUniqueId().equals(player.getUniqueId())) room.setReadyOwner(false);
+                else if (room.getChallenger() != null && room.getChallenger().getUniqueId().equals(player.getUniqueId())) room.setReadyChallenger(false);
                 refreshWaitingRoom(room);
             } else if (item.getType() == Material.RED_WOOL) {
-                // Leave
                 MTierPvP.getInstance().getRoomManager().leaveRoom(player);
                 mainMenu.open(player);
-                if (room.getOwner().equals(player)) {
-                    if (room.getChallenger() != null) mainMenu.open(room.getChallenger());
-                } else {
-                    refreshWaitingRoom(room);
-                }
+                refreshWaitingRoom(room); // Notifies other player
             }
         }
     }
 
     @EventHandler
-    public void onInventoryClose(org.bukkit.event.inventory.InventoryCloseEvent event) {
+    public void onInventoryClose(InventoryCloseEvent event) {
         String title = event.getView().getTitle();
         Player player = (Player) event.getPlayer();
 
-        // 1. If closed Queue Menu -> Stop Searching
         if (title.equals(queueMenu.getTitle())) {
-            if (MTierPvP.getInstance().getQueueManager().isSearching(player)) {
-                MTierPvP.getInstance().getQueueManager().stopSearching(player);
-                player.sendMessage("§6§lMTier §8» §cMatchmaking cancelled (Menu closed).");
-            }
-        }
-
-        // 2. If closed Waiting Room -> Leave/Dissolve Room
-        else if (title.equals(waitingRoomMenu.getTitle())) {
+            MTierPvP.getInstance().getQueueManager().stopSearching(player);
+        } else if (title.equals(waitingRoomMenu.getTitle())) {
             RoomManager.DuelRoom room = MTierPvP.getInstance().getRoomManager().getPlayerRoom(player);
             if (room != null && !room.isStarting()) {
-                boolean isOwner = room.getOwner().equals(player);
-                Player other = isOwner ? room.getChallenger() : room.getOwner();
-
                 MTierPvP.getInstance().getRoomManager().leaveRoom(player);
-                player.sendMessage("§6§lMTier §8» §cYou left the waiting room.");
-
-                if (other != null && other.isOnline()) {
-                    if (isOwner) {
-                        other.sendMessage("§6§lMTier §8» §cThe room was dissolved by the owner.");
-                        mainMenu.open(other);
-                    } else {
-                        other.sendMessage("§6§lMTier §8» §eOpponent left the room.");
-                        refreshWaitingRoom(room);
-                    }
-                }
+                refreshWaitingRoom(room);
             }
         }
     }
 
     private void refreshWaitingRoom(RoomManager.DuelRoom room) {
-        if (room.getOwner() != null) {
-            waitingRoomMenu.open(room.getOwner(), room.getOwner(), room.getChallenger(), room.isReadyOwner(), room.isReadyChallenger());
+        if (room == null) return;
+        
+        Player owner = room.getOwner();
+        Player challenger = room.getChallenger();
+
+        if (owner != null && owner.isOnline() && owner.getOpenInventory().getTitle().equals(waitingRoomMenu.getTitle())) {
+            waitingRoomMenu.open(owner, owner, challenger, room.isReadyOwner(), room.isReadyChallenger());
         }
-        if (room.getChallenger() != null) {
-            waitingRoomMenu.open(room.getChallenger(), room.getOwner(), room.getChallenger(), room.isReadyOwner(), room.isReadyChallenger());
+        if (challenger != null && challenger.isOnline() && challenger.getOpenInventory().getTitle().equals(waitingRoomMenu.getTitle())) {
+            waitingRoomMenu.open(challenger, owner, challenger, room.isReadyOwner(), room.isReadyChallenger());
         }
         
         if (room.bothReady() && !room.isStarting()) {
             room.setStarting(true);
-            // TODO: Start Countdown Task
-            room.getOwner().sendMessage("§aMatch starts in 5 seconds...");
-            if (room.getChallenger() != null) room.getChallenger().sendMessage("§aMatch starts in 5 seconds...");
+            String msg = "§6§lMTier §8» §aAll players ready! Match starts in 5 seconds...";
+            if (owner != null) owner.sendMessage(msg);
+            if (challenger != null) challenger.sendMessage(msg);
+            // In next phase: Trigger task to close GUI and teleport
         }
     }
 }

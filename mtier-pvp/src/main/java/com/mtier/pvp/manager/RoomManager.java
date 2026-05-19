@@ -48,6 +48,18 @@ public class RoomManager {
         return room;
     }
 
+    public void createMatchmakingRoom(Player a, Player b) {
+        DuelRoom room = createRoom(a);
+        room.setChallenger(b);
+        playerToRoom.put(b.getUniqueId(), room.getId());
+        
+        a.sendMessage("§6§lMTier §8» §aMatch Found! §7vs §e" + b.getName());
+        b.sendMessage("§6§lMTier §8» §aMatch Found! §7vs §e" + a.getName());
+        
+        // Open GUI for both handled in sync task or listener
+        // We'll trigger it in the listener refresh logic
+    }
+
     public void removeRoom(UUID roomId) {
         DuelRoom room = activeRooms.remove(roomId);
         if (room != null) {
@@ -82,10 +94,8 @@ public class RoomManager {
         if (room == null) return;
 
         if (room.getOwner().getUniqueId().equals(player.getUniqueId())) {
-            // Owner leaves -> Dissolve room
             removeRoom(room.getId());
         } else {
-            // Challenger leaves
             room.setChallenger(null);
             room.setReadyChallenger(false);
             room.setReadyOwner(false);
