@@ -44,10 +44,14 @@ public class PvPListener implements Listener {
         else if (title.equals(queueMenu.getTitle())) {
             if (item.getType() == Material.RED_WOOL) {
                 MTierPvP.getInstance().getQueueManager().startSearching(player);
+                refreshing.add(player.getUniqueId());
                 queueMenu.open(player, true);
+                refreshing.remove(player.getUniqueId());
             } else if (item.getType() == Material.YELLOW_WOOL) {
                 MTierPvP.getInstance().getQueueManager().stopSearching(player);
+                refreshing.add(player.getUniqueId());
                 queueMenu.open(player, false);
+                refreshing.remove(player.getUniqueId());
             } else if (item.getType() == Material.ARROW) {
                 mainMenu.open(player);
             }
