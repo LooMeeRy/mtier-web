@@ -18,6 +18,7 @@ public class RoomManager {
         private boolean readyOwner = false;
         private boolean readyChallenger = false;
         private boolean starting = false;
+        private boolean deleted = false;
 
         public DuelRoom(Player owner) {
             this.id = UUID.randomUUID();
@@ -34,6 +35,8 @@ public class RoomManager {
         public void setReadyChallenger(boolean readyChallenger) { this.readyChallenger = readyChallenger; }
         public boolean isStarting() { return starting; }
         public void setStarting(boolean starting) { this.starting = starting; }
+        public boolean isDeleted() { return deleted; }
+        public void setDeleted(boolean deleted) { this.deleted = deleted; }
         
         public boolean isFull() { return challenger != null; }
         public boolean bothReady() { return readyOwner && readyChallenger; }
@@ -57,13 +60,16 @@ public class RoomManager {
         a.sendMessage("§6§lMTier §8» §aMatch Found! §7vs §e" + b.getName());
         b.sendMessage("§6§lMTier §8» §aMatch Found! §7vs §e" + a.getName());
         
-        // Open GUI for both immediately
-        MTierPvP.getInstance().getPvPListener().refreshWaitingRoom(room);
+        // Use Scheduler to ensure we are on main thread for UI
+        org.bukkit.Bukkit.getScheduler().runTask(MTierPvP.getInstance(), () -> {
+            MTierPvP.getInstance().getPvPListener().refreshWaitingRoom(room);
+        });
     }
 
     public void removeRoom(UUID roomId) {
         DuelRoom room = activeRooms.remove(roomId);
         if (room != null) {
+            room.setDeleted(true);
             playerToRoom.remove(room.getOwner().getUniqueId());
             if (room.getChallenger() != null) {
                 playerToRoom.remove(room.getChallenger().getUniqueId());

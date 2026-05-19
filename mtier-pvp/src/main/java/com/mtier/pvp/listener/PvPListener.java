@@ -111,7 +111,7 @@ public class PvPListener implements Listener {
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
-        if (refreshing.contains(player.getUniqueId())) return; // Ignore if we are just refreshing the GUI
+        if (refreshing.contains(player.getUniqueId())) return; 
 
         String title = event.getView().getTitle();
         if (title.equals(queueMenu.getTitle())) {
@@ -130,6 +130,19 @@ public class PvPListener implements Listener {
         
         Player owner = room.getOwner();
         Player challenger = room.getChallenger();
+
+        // If room is deleted, send online participants to main menu
+        if (room.isDeleted()) {
+            if (owner != null && owner.isOnline() && owner.getOpenInventory().getTitle().equals(waitingRoomMenu.getTitle())) {
+                mainMenu.open(owner);
+                owner.sendMessage("§6§lMTier §8» §cThe room has been dissolved.");
+            }
+            if (challenger != null && challenger.isOnline() && challenger.getOpenInventory().getTitle().equals(waitingRoomMenu.getTitle())) {
+                mainMenu.open(challenger);
+                challenger.sendMessage("§6§lMTier §8» §cThe room has been dissolved.");
+            }
+            return;
+        }
 
         // Safe Refresh for Owner
         if (owner != null && owner.isOnline()) {
