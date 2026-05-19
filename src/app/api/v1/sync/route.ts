@@ -60,7 +60,7 @@ export async function POST(request: Request) {
           await prisma.tier.upsert({
             where: { playerId_gamemode: { playerId: player.id, gamemode: m } },
             update: {},
-            create: { playerId: player.id, gamemode: m, rank: "Iron", mmr: 1000 }
+            create: { playerId: player.id, gamemode: m, rank: "Wood", mmr: 0 }
           });
         }
 
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
 
       case "GET_STATS":
         const pStats = await prisma.player.findUnique({
-          where: { username: username },
+          where: { uuid: uuid },
           include: { tiers: true }
         });
         if (!pStats) return NextResponse.json({ error: "Not found" }, { status: 404 });
