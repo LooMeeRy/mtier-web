@@ -60,6 +60,9 @@ public class RoomManager {
         a.sendMessage("§6§lMTier §8» §aMatch Found! §7vs §e" + b.getName());
         b.sendMessage("§6§lMTier §8» §aMatch Found! §7vs §e" + a.getName());
         
+        a.playSound(a.getLocation(), org.bukkit.Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+        b.playSound(b.getLocation(), org.bukkit.Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+        
         // Use Scheduler to ensure we are on main thread for UI
         org.bukkit.Bukkit.getScheduler().runTask(MTierPvP.getInstance(), () -> {
             MTierPvP.getInstance().getPvPListener().refreshWaitingRoom(room);

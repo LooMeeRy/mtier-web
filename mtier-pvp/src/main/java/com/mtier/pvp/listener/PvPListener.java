@@ -31,10 +31,14 @@ public class PvPListener implements Listener {
         ItemStack item = event.getCurrentItem();
         if (item == null || item.getType() == Material.AIR) return;
 
+        // Default click sound for all PvP GUI items
+        player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 0.8f, 1.2f);
+
         // 1. Handle Main Menu
         if (title.equals(mainMenu.getTitle())) {
             if (item.getType() == Material.ENDER_EYE) {
                 queueMenu.open(player, MTierPvP.getInstance().getQueueManager().isSearching(player));
+                player.playSound(player.getLocation(), org.bukkit.Sound.BLOCK_NOTE_BLOCK_CHIME, 1.0f, 1.0f);
             } else if (item.getType() == Material.OAK_SIGN) {
                 browserMenu.open(player, MTierPvP.getInstance().getRoomManager().getAvailableRooms(), 0);
             }
@@ -44,11 +48,13 @@ public class PvPListener implements Listener {
         else if (title.equals(queueMenu.getTitle())) {
             if (item.getType() == Material.RED_WOOL) {
                 MTierPvP.getInstance().getQueueManager().startSearching(player);
+                player.playSound(player.getLocation(), org.bukkit.Sound.BLOCK_NOTE_BLOCK_XYLOPHONE, 1.0f, 1.0f);
                 refreshing.add(player.getUniqueId());
                 queueMenu.open(player, true);
                 refreshing.remove(player.getUniqueId());
             } else if (item.getType() == Material.YELLOW_WOOL) {
                 MTierPvP.getInstance().getQueueManager().stopSearching(player);
+                player.playSound(player.getLocation(), org.bukkit.Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 0.8f);
                 refreshing.add(player.getUniqueId());
                 queueMenu.open(player, false);
                 refreshing.remove(player.getUniqueId());
@@ -61,9 +67,11 @@ public class PvPListener implements Listener {
         else if (title.contains(browserMenu.getTitle())) {
             if (item.getType() == Material.NETHER_STAR) {
                 RoomManager.DuelRoom room = MTierPvP.getInstance().getRoomManager().createRoom(player);
-                refreshWaitingRoom(room); // Open for owner
+                player.playSound(player.getLocation(), org.bukkit.Sound.BLOCK_NOTE_BLOCK_CHIME, 1.0f, 1.2f);
+                refreshWaitingRoom(room);
             } else if (item.getType() == Material.SUNFLOWER) {
                 browserMenu.open(player, MTierPvP.getInstance().getRoomManager().getAvailableRooms(), 0);
+                player.playSound(player.getLocation(), org.bukkit.Sound.ITEM_ARMOR_EQUIP_CHAIN, 1.0f, 1.0f);
             } else if (item.getType() == Material.BARRIER) {
                 mainMenu.open(player);
             } else if (item.getType() == Material.PLAYER_HEAD) {
@@ -72,10 +80,12 @@ public class PvPListener implements Listener {
                     if (r.getOwner().getName().equals(ownerName)) {
                         if (r.isFull()) {
                             player.sendMessage("§6§lMTier §8» §cThis room is already full!");
+                            player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
                             return;
                         }
                         MTierPvP.getInstance().getRoomManager().joinRoom(player, r);
-                        refreshWaitingRoom(r); // Open for both
+                        player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+                        refreshWaitingRoom(r);
                         return;
                     }
                 }
@@ -88,24 +98,18 @@ public class PvPListener implements Listener {
             if (room == null) return;
 
             if (item.getType() == Material.GREEN_WOOL) {
-                // Set Ready
-                if (room.getOwner().getUniqueId().equals(player.getUniqueId())) {
-                    room.setReadyOwner(true);
-                } else if (room.getChallenger() != null && room.getChallenger().getUniqueId().equals(player.getUniqueId())) {
-                    room.setReadyChallenger(true);
-                }
+                if (room.getOwner().getUniqueId().equals(player.getUniqueId())) room.setReadyOwner(true);
+                else if (room.getChallenger() != null && room.getChallenger().getUniqueId().equals(player.getUniqueId())) room.setReadyChallenger(true);
+                player.playSound(player.getLocation(), org.bukkit.Sound.BLOCK_NOTE_BLOCK_PLING, 1.0f, 2.0f);
                 refreshWaitingRoom(room);
             } else if (item.getType() == Material.YELLOW_WOOL) {
-                // Unready
-                if (room.getOwner().getUniqueId().equals(player.getUniqueId())) {
-                    room.setReadyOwner(false);
-                } else if (room.getChallenger() != null && room.getChallenger().getUniqueId().equals(player.getUniqueId())) {
-                    room.setReadyChallenger(false);
-                }
+                if (room.getOwner().getUniqueId().equals(player.getUniqueId())) room.setReadyOwner(false);
+                else if (room.getChallenger() != null && room.getChallenger().getUniqueId().equals(player.getUniqueId())) room.setReadyChallenger(false);
+                player.playSound(player.getLocation(), org.bukkit.Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.2f);
                 refreshWaitingRoom(room);
             } else if (item.getType() == Material.RED_WOOL) {
-                // Leave
                 MTierPvP.getInstance().getRoomManager().leaveRoom(player);
+                player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.5f);
                 mainMenu.open(player);
                 refreshWaitingRoom(room);
             }
