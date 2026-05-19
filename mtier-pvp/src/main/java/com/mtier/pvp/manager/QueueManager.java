@@ -7,30 +7,39 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class QueueManager {
 
+    // K: Player UUID, V: Start time in ms
     private final Map<UUID, Long> searchingPlayers = new ConcurrentHashMap<>();
 
+    private static class QueueEntry {
+        Player player;
+        int mmr;
+        long waitTimeMs;
+
+        public QueueEntry(Player player, int mmr, long waitTimeMs) {
+            this.player = player;
+            this.mmr = mmr;
+            this.waitTimeMs = waitTimeMs;
+        }
+    }
+
     public QueueManager() {
-        // Continuous Matchmaking Task (Runs every 2 seconds)
+        // Continuous Matchmaking Task (Centralized Engine)
         new BukkitRunnable() {
             @Override
             public void run() {
-                for (UUID uuid : searchingPlayers.keySet()) {
-                    Player p = Bukkit.getPlayer(uuid);
-                    if (p != null) attemptMatch(p);
-                }
+                processMatchmaking();
             }
-        }.runTaskTimer(MTierPvP.getInstance(), 40L, 40L);
+        }.runTaskTimer(MTierPvP.getInstance(), 40L, 40L); // Run every 2 seconds
     }
 
     public void startSearching(Player player) {
         searchingPlayers.put(player.getUniqueId(), System.currentTimeMillis());
-        player.sendMessage("§6§lMTier §8» §eStarted searching for a match...");
+        // Message sent in listener or here
     }
 
     public void stopSearching(Player player) {
@@ -41,31 +50,61 @@ public class QueueManager {
         return searchingPlayers.containsKey(player.getUniqueId());
     }
 
-    private void attemptMatch(Player player) {
-        if (!isSearching(player)) return;
+    private void processMatchmaking() {
+        if (searchingPlayers.size() < 2) return;
 
-        WebSyncManager.PlayerData pData = MTierPlugin.getAPI().getCachedPlayerData(player.getUniqueId());
-        int pMmr = (pData != null && pData.stats().containsKey("PvP")) ? pData.stats().get("PvP").mmr() : 0;
+        long now = System.currentTimeMillis();
+        List<QueueEntry> pool = new ArrayList<>();
 
-        for (UUID otherUuid : searchingPlayers.keySet()) {
-            if (otherUuid.equals(player.getUniqueId())) continue;
-
-            Player other = Bukkit.getPlayer(otherUuid);
-            if (other == null) {
-                searchingPlayers.remove(otherUuid);
+        // 1. Collect all valid players
+        for (Map.Entry<UUID, Long> entry : searchingPlayers.entrySet()) {
+            Player p = Bukkit.getPlayer(entry.getKey());
+            if (p == null || !p.isOnline()) {
+                searchingPlayers.remove(entry.getKey());
                 continue;
             }
 
-            WebSyncManager.PlayerData oData = MTierPlugin.getAPI().getCachedPlayerData(otherUuid);
-            int oMmr = (oData != null && oData.stats().containsKey("PvP")) ? oData.stats().get("PvP").mmr() : 0;
+            WebSyncManager.PlayerData pData = MTierPlugin.getAPI().getCachedPlayerData(p.getUniqueId());
+            int mmr = 0;
+            if (pData != null && pData.stats() != null && pData.stats().containsKey("PvP")) {
+                mmr = pData.stats().get("PvP").mmr();
+            }
 
-            // MMR range matching: +/- 300 MMR
-            if (Math.abs(pMmr - oMmr) <= 300) {
-                searchingPlayers.remove(player.getUniqueId());
-                searchingPlayers.remove(otherUuid);
-                
-                // Trigger Match Found in Listener
-                MTierPvP.getInstance().getRoomManager().createMatchmakingRoom(player, other);
+            pool.add(new QueueEntry(p, mmr, now - entry.getValue()));
+        }
+
+        if (pool.size() < 2) return;
+
+        // 2. Sort by MMR (ascending)
+        pool.sort(Comparator.comparingInt(e -> e.mmr));
+
+        // 3. Pairing Logic
+        Set<UUID> matched = new HashSet<>();
+
+        for (int i = 0; i < pool.size() - 1; i++) {
+            QueueEntry p1 = pool.get(i);
+            if (matched.contains(p1.player.getUniqueId())) continue;
+
+            QueueEntry p2 = pool.get(i + 1);
+            if (matched.contains(p2.player.getUniqueId())) continue;
+
+            int mmrDiff = Math.abs(p1.mmr - p2.mmr);
+            
+            // Dynamic MMR Range: expand allowed difference if waiting longer
+            long maxWait = Math.max(p1.waitTimeMs, p2.waitTimeMs);
+            int allowedDiff = 200; // Base difference
+            if (maxWait > 20000) allowedDiff = 500; // > 20s
+            if (maxWait > 40000) allowedDiff = 1000; // > 40s
+
+            if (mmrDiff <= allowedDiff) {
+                // Match Found!
+                matched.add(p1.player.getUniqueId());
+                matched.add(p2.player.getUniqueId());
+                searchingPlayers.remove(p1.player.getUniqueId());
+                searchingPlayers.remove(p2.player.getUniqueId());
+
+                // Trigger Room Creation & UI
+                MTierPvP.getInstance().getRoomManager().createMatchmakingRoom(p1.player, p2.player);
             }
         }
     }
