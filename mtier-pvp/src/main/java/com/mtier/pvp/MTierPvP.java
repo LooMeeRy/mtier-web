@@ -13,12 +13,14 @@ public class MTierPvP extends JavaPlugin {
     private static MTierPvP instance;
     private QueueManager queueManager;
     private RoomManager roomManager;
+    private com.mtier.pvp.listener.PvPListener pvpListener;
 
     @Override
     public void onEnable() {
         instance = this;
         this.queueManager = new QueueManager();
         this.roomManager = new RoomManager();
+        this.pvpListener = new com.mtier.pvp.listener.PvPListener();
 
         // Register with MTier-Core
         MTierPlugin.getAPI().registerGamemode(
@@ -26,12 +28,12 @@ public class MTierPvP extends JavaPlugin {
             "PvP Sector", 
             Material.DIAMOND_SWORD, 
             player -> {
-                new PvPMainMenu().open(player);
+                new com.mtier.pvp.gui.PvPMainMenu().open(player);
             }
         );
 
         // Register Listeners
-        getServer().getPluginManager().registerEvents(new PvPListener(), this);
+        getServer().getPluginManager().registerEvents(this.pvpListener, this);
 
         getLogger().info("MTier-PvP v1.0 has been enabled and registered!");
     }
@@ -52,4 +54,9 @@ public class MTierPvP extends JavaPlugin {
     public RoomManager getRoomManager() {
         return roomManager;
     }
-}
+
+    public com.mtier.pvp.listener.PvPListener getPvPListener() {
+        return pvpListener;
+    }
+    }
+

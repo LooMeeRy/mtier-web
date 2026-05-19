@@ -1,5 +1,6 @@
 package com.mtier.pvp.manager;
 
+import com.mtier.pvp.MTierPvP;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -56,8 +57,8 @@ public class RoomManager {
         a.sendMessage("§6§lMTier §8» §aMatch Found! §7vs §e" + b.getName());
         b.sendMessage("§6§lMTier §8» §aMatch Found! §7vs §e" + a.getName());
         
-        // Open GUI for both handled in sync task or listener
-        // We'll trigger it in the listener refresh logic
+        // Open GUI for both immediately
+        MTierPvP.getInstance().getPvPListener().refreshWaitingRoom(room);
     }
 
     public void removeRoom(UUID roomId) {

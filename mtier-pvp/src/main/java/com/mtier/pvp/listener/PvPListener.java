@@ -18,6 +18,9 @@ public class PvPListener implements Listener {
     private final WaitingRoomMenu waitingRoomMenu = new WaitingRoomMenu();
     private final RoomBrowserMenu browserMenu = new RoomBrowserMenu();
 
+    // Prevent recursive exit when refreshing UI
+    private final java.util.Set<java.util.UUID> refreshing = new java.util.HashSet<>();
+
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         String title = event.getView().getTitle();
@@ -53,8 +56,8 @@ public class PvPListener implements Listener {
         // 3. Handle Browser Menu
         else if (title.contains(browserMenu.getTitle())) {
             if (item.getType() == Material.NETHER_STAR) {
-                MTierPvP.getInstance().getRoomManager().createRoom(player);
-                waitingRoomMenu.open(player, player, null, false, false);
+                RoomManager.DuelRoom room = MTierPvP.getInstance().getRoomManager().createRoom(player);
+                refreshWaitingRoom(room); // Open for owner
             } else if (item.getType() == Material.SUNFLOWER) {
                 browserMenu.open(player, MTierPvP.getInstance().getRoomManager().getAvailableRooms(), 0);
             } else if (item.getType() == Material.BARRIER) {
@@ -68,7 +71,7 @@ public class PvPListener implements Listener {
                             return;
                         }
                         MTierPvP.getInstance().getRoomManager().joinRoom(player, r);
-                        refreshWaitingRoom(r);
+                        refreshWaitingRoom(r); // Open for both
                         return;
                     }
                 }
@@ -81,26 +84,36 @@ public class PvPListener implements Listener {
             if (room == null) return;
 
             if (item.getType() == Material.GREEN_WOOL) {
-                if (room.getOwner().getUniqueId().equals(player.getUniqueId())) room.setReadyOwner(true);
-                else if (room.getChallenger() != null && room.getChallenger().getUniqueId().equals(player.getUniqueId())) room.setReadyChallenger(true);
+                // Set Ready
+                if (room.getOwner().getUniqueId().equals(player.getUniqueId())) {
+                    room.setReadyOwner(true);
+                } else if (room.getChallenger() != null && room.getChallenger().getUniqueId().equals(player.getUniqueId())) {
+                    room.setReadyChallenger(true);
+                }
                 refreshWaitingRoom(room);
             } else if (item.getType() == Material.YELLOW_WOOL) {
-                if (room.getOwner().getUniqueId().equals(player.getUniqueId())) room.setReadyOwner(false);
-                else if (room.getChallenger() != null && room.getChallenger().getUniqueId().equals(player.getUniqueId())) room.setReadyChallenger(false);
+                // Unready
+                if (room.getOwner().getUniqueId().equals(player.getUniqueId())) {
+                    room.setReadyOwner(false);
+                } else if (room.getChallenger() != null && room.getChallenger().getUniqueId().equals(player.getUniqueId())) {
+                    room.setReadyChallenger(false);
+                }
                 refreshWaitingRoom(room);
             } else if (item.getType() == Material.RED_WOOL) {
+                // Leave
                 MTierPvP.getInstance().getRoomManager().leaveRoom(player);
                 mainMenu.open(player);
-                refreshWaitingRoom(room); // Notifies other player
+                refreshWaitingRoom(room);
             }
         }
     }
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        String title = event.getView().getTitle();
         Player player = (Player) event.getPlayer();
+        if (refreshing.contains(player.getUniqueId())) return; // Ignore if we are just refreshing the GUI
 
+        String title = event.getView().getTitle();
         if (title.equals(queueMenu.getTitle())) {
             MTierPvP.getInstance().getQueueManager().stopSearching(player);
         } else if (title.equals(waitingRoomMenu.getTitle())) {
@@ -112,17 +125,24 @@ public class PvPListener implements Listener {
         }
     }
 
-    private void refreshWaitingRoom(RoomManager.DuelRoom room) {
+    public void refreshWaitingRoom(RoomManager.DuelRoom room) {
         if (room == null) return;
         
         Player owner = room.getOwner();
         Player challenger = room.getChallenger();
 
-        if (owner != null && owner.isOnline() && owner.getOpenInventory().getTitle().equals(waitingRoomMenu.getTitle())) {
+        // Safe Refresh for Owner
+        if (owner != null && owner.isOnline()) {
+            refreshing.add(owner.getUniqueId());
             waitingRoomMenu.open(owner, owner, challenger, room.isReadyOwner(), room.isReadyChallenger());
+            refreshing.remove(owner.getUniqueId());
         }
-        if (challenger != null && challenger.isOnline() && challenger.getOpenInventory().getTitle().equals(waitingRoomMenu.getTitle())) {
+
+        // Safe Refresh for Challenger
+        if (challenger != null && challenger.isOnline()) {
+            refreshing.add(challenger.getUniqueId());
             waitingRoomMenu.open(challenger, owner, challenger, room.isReadyOwner(), room.isReadyChallenger());
+            refreshing.remove(challenger.getUniqueId());
         }
         
         if (room.bothReady() && !room.isStarting()) {
@@ -130,7 +150,6 @@ public class PvPListener implements Listener {
             String msg = "§6§lMTier §8» §aAll players ready! Match starts in 5 seconds...";
             if (owner != null) owner.sendMessage(msg);
             if (challenger != null) challenger.sendMessage(msg);
-            // In next phase: Trigger task to close GUI and teleport
         }
     }
 }
