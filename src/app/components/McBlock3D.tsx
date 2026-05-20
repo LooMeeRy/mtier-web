@@ -9,8 +9,8 @@ interface McBlock3DProps {
 }
 
 /**
- * Minecraft 3D Block Renderer (Final Geometry)
- * Uses a robust wrapper system to ensure faces are perfectly aligned.
+ * Minecraft 2.5D Isometric Block Renderer
+ * Uses stable 2D skew transforms for a perfect 3D look without 3D bugs.
  */
 export default function McBlock3D({ name, size = 64, className = "" }: McBlock3DProps) {
   const baseName = name.toLowerCase().replace(/\s+/g, '_');
@@ -33,68 +33,66 @@ export default function McBlock3D({ name, size = 64, className = "" }: McBlock3D
   };
 
   const textures = getTextures(baseName);
-  const halfSize = size / 2;
+  
+  // Scale factor for isometric projection
+  const s = size * 0.6; 
 
   return (
     <div 
       className={`relative flex items-center justify-center ${className}`}
-      style={{ 
-        width: size, 
-        height: size,
-        perspective: '1000px',
-      }}
+      style={{ width: size, height: size }}
     >
-      {/* Glow Effect to confirm update */}
-      <div className="absolute inset-0 bg-orange-500/10 blur-2xl rounded-full opacity-50"></div>
+      {/* Verification Label (Subtle) */}
+      <span className="absolute -top-2 left-0 text-[6px] text-orange-500/20 font-black uppercase tracking-widest">v3.21-stable</span>
 
-      <div 
-        className="relative"
-        style={{
-            width: size,
-            height: size,
-            transformStyle: 'preserve-3d',
-            transform: 'rotateX(-30deg) rotateY(45deg)',
-            transition: 'transform 0.5s ease-out'
-        }}
-      >
-        {/* TOP FACE */}
+      <div className="relative" style={{ width: s, height: s }}>
+        {/* TOP FACE: Skewed and Rotated */}
         <div 
           className="absolute mc-icon"
           style={{
-            width: size,
-            height: size,
+            width: s,
+            height: s,
             backgroundImage: `url(${textures.top})`,
-            backgroundSize: '100% 100%',
-            transform: `rotateX(90deg) translateZ(${halfSize}px)`,
-            boxShadow: 'inset 0 0 10px rgba(255,255,255,0.2)',
+            backgroundSize: 'cover',
+            transform: 'rotate(-45deg) skew(15deg, 15deg)',
+            top: `-${s * 0.35}px`,
+            left: '0px',
+            zIndex: 3,
+            boxShadow: 'inset 0 0 10px rgba(255,255,255,0.1)'
           }}
         />
         
-        {/* FRONT FACE (LEFT-ish in Isometric) */}
+        {/* LEFT FACE: Skewed */}
         <div 
           className="absolute mc-icon"
           style={{
-            width: size,
-            height: size,
+            width: s,
+            height: s,
             backgroundImage: `url(${textures.side})`,
-            backgroundSize: '100% 100%',
-            transform: `rotateY(0deg) translateZ(${halfSize}px)`,
-            filter: 'brightness(0.9)',
-            boxShadow: 'inset 0 0 15px rgba(0,0,0,0.3)',
+            backgroundSize: 'cover',
+            transform: 'skewY(30deg)',
+            top: '0px',
+            left: `-${s * 0.5}px`,
+            filter: 'brightness(0.85)',
+            zIndex: 2,
+            boxShadow: 'inset 0 0 15px rgba(0,0,0,0.2)'
           }}
         />
 
-        {/* RIGHT FACE (RIGHT-ish in Isometric) */}
+        {/* RIGHT FACE: Skewed */}
         <div 
           className="absolute mc-icon"
           style={{
-            width: size,
-            height: size,
+            width: s,
+            height: s,
             backgroundImage: `url(${textures.side})`,
-            backgroundSize: '100% 100%',
-            transform: `rotateY(90deg) translateZ(${halfSize}px)`,
+            backgroundSize: 'cover',
+            transform: 'skewY(-30deg)',
+            top: '0px',
+            left: `${s * 0.5}px`,
             filter: 'brightness(0.7)',
-            boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)',
+            zIndex: 1,
+            boxShadow: 'inset 0 0 20px rgba(0,0,0,0.4)'
           }}
         />
       </div>
