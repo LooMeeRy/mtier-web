@@ -159,8 +159,19 @@ function PvpDetails({ details }: { details: any }) {
                     </div>
                     <div className="flex flex-wrap gap-2 px-4 py-6 rounded-3xl bg-red-500/[0.02] border border-red-500/10">
                         {bannedItems.map((item, i) => (
-                            <div key={i} className="w-10 h-10 flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-lg group hover:border-red-500/30 transition-all p-1.5 shadow-inner">
-                                <img src={getMcIcon(item)} className="w-full h-full object-contain mc-icon" title={item} alt="" />
+                            <div key={i} className="flex flex-col items-center gap-1 group">
+                                <div className="w-10 h-10 flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-lg group-hover:border-red-500/30 transition-all p-1.5 shadow-inner">
+                                    <img 
+                                        src={getMcIcon(item)} 
+                                        className="w-full h-full object-contain mc-icon" 
+                                        title={item} 
+                                        alt={item}
+                                        onError={(e) => {
+                                            (e.target as HTMLImageElement).src = '/mc-assets/item/barrier.png';
+                                        }}
+                                    />
+                                </div>
+                                <span className="text-[7px] font-black text-zinc-800 uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity truncate max-w-[40px]">{item.replace(/_/g, ' ')}</span>
                             </div>
                         ))}
                     </div>
@@ -174,8 +185,17 @@ function PvpDetails({ details }: { details: any }) {
                     <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest border-l-2 border-emerald-500 pl-4">Tactical Arsenal » {winner?.name || 'Winner'}</span>
                     <div className="grid grid-cols-6 gap-2 p-6 rounded-3xl bg-emerald-500/[0.02] border border-emerald-500/10 min-h-[160px]">
                         {winner?.loadout?.length > 0 ? winner.loadout.map((item: string, i: number) => (
-                            <div key={i} className="aspect-square flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-xl p-2 group hover:border-emerald-500/20 transition-all shadow-inner">
-                                <img src={getMcIcon(item)} className="w-full h-full object-contain mc-icon" title={item} alt="" />
+                            <div key={i} className="aspect-square flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-xl p-2 group hover:border-emerald-500/20 transition-all shadow-inner relative">
+                                <img 
+                                    src={getMcIcon(item)} 
+                                    className="w-full h-full object-contain mc-icon" 
+                                    title={item} 
+                                    alt={item}
+                                    onError={(e) => {
+                                        (e.target as HTMLImageElement).src = '/mc-assets/item/barrier.png';
+                                    }}
+                                />
+                                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 text-[5px] font-black text-zinc-700 uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-black/80 px-1 rounded-sm z-10">{item.split('_').pop()}</span>
                             </div>
                         )) : (
                             <div className="col-span-6 flex items-center justify-center text-[9px] font-black text-zinc-800 uppercase italic">No gear data encrypted</div>
@@ -188,8 +208,17 @@ function PvpDetails({ details }: { details: any }) {
                     <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest border-l-2 border-zinc-700 pl-4">Engaged Arsenal » {loser?.name || 'Loser'}</span>
                     <div className="grid grid-cols-6 gap-2 p-6 rounded-3xl bg-zinc-900/30 border border-zinc-800/50 min-h-[160px]">
                         {loser?.loadout?.length > 0 ? loser.loadout.map((item: string, i: number) => (
-                            <div key={i} className="aspect-square flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-xl p-2 group hover:border-zinc-500/20 transition-all shadow-inner">
-                                <img src={getMcIcon(item)} className="w-full h-full object-contain mc-icon opacity-80" title={item} alt="" />
+                            <div key={i} className="aspect-square flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-xl p-2 group hover:border-zinc-500/20 transition-all shadow-inner relative">
+                                <img 
+                                    src={getMcIcon(item)} 
+                                    className="w-full h-full object-contain mc-icon opacity-80" 
+                                    title={item} 
+                                    alt={item}
+                                    onError={(e) => {
+                                        (e.target as HTMLImageElement).src = '/mc-assets/item/barrier.png';
+                                    }}
+                                />
+                                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 text-[5px] font-black text-zinc-700 uppercase opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-black/80 px-1 rounded-sm z-10">{item.split('_').pop()}</span>
                             </div>
                         )) : (
                             <div className="col-span-6 flex items-center justify-center text-[9px] font-black text-zinc-800 uppercase italic">No gear data encrypted</div>
