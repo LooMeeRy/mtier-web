@@ -23,6 +23,7 @@ interface Match {
   matchType: string;
   result: string;
   mmrChange: number;
+  opponent: string;
   duration: number;
   detailsJson: string;
   createdAt: Date;
@@ -231,12 +232,19 @@ function PvpDetails({ details }: { details: any }) {
             <div className="bento-card p-6 border-zinc-800/50 flex items-center justify-between">
                 <div className="flex items-center gap-6">
                     <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden flex items-center justify-center p-2 shadow-inner">
-                        <img src={`https://mc-heads.net/avatar/${loser?.name || 'Steve'}/64`} className="object-contain w-full h-full" alt="" />
+                        <img 
+                            src={`https://mc-heads.net/avatar/${match.opponent}/64`} 
+                            className="object-contain w-full h-full" 
+                            alt={match.opponent}
+                            onError={(e) => {
+                                (e.target as HTMLImageElement).src = `https://crafatar.com/avatars/${match.opponent}?size=64`;
+                            }}
+                        />
                     </div>
                     <div>
-                        <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-1">Target Neutralized</p>
-                        <p className="text-2xl font-black text-white italic tracking-tighter uppercase">{loser?.name || 'Unknown Entity'}</p>
-                        <p className="text-[9px] font-black text-zinc-700 uppercase tracking-widest mt-1 italic">Protocol 1v1 Execution Verified</p>
+                        <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-1">Combatant Encountered</p>
+                        <p className="text-2xl font-black text-white italic tracking-tighter uppercase">{match.opponent}</p>
+                        <p className="text-[9px] font-black text-zinc-700 uppercase tracking-widest mt-1 italic">Protocol 1v1 Identity Verified</p>
                     </div>
                 </div>
                 <img src={getMcIcon('Iron_Sword')} className="w-8 h-8 object-contain mc-icon opacity-20" alt="" />
