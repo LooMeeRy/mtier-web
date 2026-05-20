@@ -98,7 +98,7 @@ export default function MatchModal({ isOpen, onClose, match }: MatchModalProps) 
             {match.gamemode === 'Bridge' ? (
                 <BridgeDetails details={details} />
             ) : (
-                <PvpDetails details={details} />
+                <PvpDetails details={details} opponent={match.opponent} />
             )}
         </div>
 
@@ -144,11 +144,12 @@ function BridgeDetails({ details }: { details: any }) {
     )
 }
 
-function PvpDetails({ details }: { details: any }) {
+function PvpDetails({ details, opponent }: { details: any, opponent?: string }) {
     const bannedItems = (details.metadata?.banned_items || []) as string[];
     const participants = (details.allParticipants || []) as any[];
-    const winner = participants.find(p => p.winner);
-    const loser = participants.find(p => !p.winner);
+    const winner = participants.find(p => p.winner) || { name: 'Winner', loadout: [] };
+    const loser = participants.find(p => !p.winner) || { name: 'Loser', loadout: [] };
+    const safeOpponent = opponent || 'Unknown';
 
     return (
         <div className="space-y-12">
@@ -233,17 +234,17 @@ function PvpDetails({ details }: { details: any }) {
                 <div className="flex items-center gap-6">
                     <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden flex items-center justify-center p-2 shadow-inner">
                         <img 
-                            src={`https://mc-heads.net/avatar/${match.opponent}/64`} 
+                            src={`https://mc-heads.net/avatar/${safeOpponent}/64`} 
                             className="object-contain w-full h-full" 
-                            alt={match.opponent}
+                            alt={safeOpponent}
                             onError={(e) => {
-                                (e.target as HTMLImageElement).src = `https://crafatar.com/avatars/${match.opponent}?size=64`;
+                                (e.target as HTMLImageElement).src = `https://crafatar.com/avatars/${safeOpponent}?size=64`;
                             }}
                         />
                     </div>
                     <div>
                         <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-1">Combatant Encountered</p>
-                        <p className="text-2xl font-black text-white italic tracking-tighter uppercase">{match.opponent}</p>
+                        <p className="text-2xl font-black text-white italic tracking-tighter uppercase">{safeOpponent}</p>
                         <p className="text-[9px] font-black text-zinc-700 uppercase tracking-widest mt-1 italic">Protocol 1v1 Identity Verified</p>
                     </div>
                 </div>
