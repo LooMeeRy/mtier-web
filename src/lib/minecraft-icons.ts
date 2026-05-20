@@ -6,13 +6,11 @@ export const getMcIcon = (type: string) => {
   if (!type || type.toLowerCase() === 'air') return `https://raw.githubusercontent.com/PrismarineJS/minecraft-assets/master/data/1.21.1/items/barrier.png`;
 
   let id = type.toLowerCase();
+  const mcAssetBase = `https://mcasset.cloud/1.21.1/assets/minecraft/textures`;
   
-  // This repo has pre-rendered 2D sprites for EVERYTHING (Shields, Blocks, etc.)
-  const repoBase = `https://raw.githubusercontent.com/anish-shanbhag/minecraft-api/master/public/images`;
-  
-  // Mapping for 3D Blocks (Overrides for categories)
-  const blocks: Record<string, string> = {
-    'survival': 'grass_block',
+  // Mapping for Category Blocks (Top view for 2D feel)
+  const categoryBlocks: Record<string, string> = {
+    'survival': 'grass_block_top',
     'bridge': 'oak_planks',
     'stone': 'stone',
     'wood': 'oak_log',
@@ -20,38 +18,45 @@ export const getMcIcon = (type: string) => {
     'netherite_block': 'netherite_block',
     'diamond_block': 'diamond_block',
     'emerald_block': 'emerald_block',
-    'global': 'grass_block', 
+    'global': 'grass_block_top', 
   };
 
-  // Naming Fixes for this specific repo
-  // It uses 'gold_sword' but 'golden_apple'
-  if (id.includes('golden_') && !id.includes('apple') && !id.includes('carrot')) {
-    id = id.replace('golden_', 'gold_');
-  }
-  if (id.includes('wooden_')) {
-    id = id.replace('wooden_', 'wood_');
-  }
-
-  // Explicit mapping for dashboard
-  const overrides: Record<string, string> = {
-    'pvp': 'items/diamond_sword.png',
-    'manhunt': 'items/compass.png',
-    'netherstar': 'items/nether_star.png',
-    'empty_map': 'items/map.png',
-    'book_and_quill': 'items/writable_book.png',
-    'clock': 'items/clock_00.png',
-    'recovery_compass': 'items/recovery_compass_00.png',
-    'experience_bottle': 'items/experience_bottle.png',
+  // Explicit Item Mapping for Bukkit -> Minecraft Asset Name
+  const itemOverrides: Record<string, string> = {
+    'pvp': 'diamond_sword',
+    'manhunt': 'compass',
+    'netherstar': 'nether_star',
+    'empty_map': 'map',
+    'book_and_quill': 'writable_book',
+    'clock': 'clock',
+    'recovery_compass': 'recovery_compass',
+    'experience_bottle': 'experience_bottle',
+    'enchanted_golden_apple': 'golden_apple',
+    'golden_apple': 'golden_apple',
+    'golden_sword': 'golden_sword',
+    'golden_axe': 'golden_axe',
+    'golden_pickaxe': 'golden_pickaxe',
+    'golden_shovel': 'golden_shovel',
+    'golden_hoe': 'golden_hoe',
+    'golden_helmet': 'golden_helmet',
+    'golden_chestplate': 'golden_chestplate',
+    'golden_leggings': 'golden_leggings',
+    'golden_boots': 'golden_boots',
+    'wooden_sword': 'wooden_sword',
+    'wooden_axe': 'wooden_axe',
+    'wooden_pickaxe': 'wooden_pickaxe',
+    'wooden_shovel': 'wooden_shovel',
+    'wooden_hoe': 'wooden_hoe',
   };
 
-  if (blocks[id]) {
-    return `${repoBase}/blocks/${blocks[id]}.png`;
+  if (categoryBlocks[id]) {
+    return `${mcAssetBase}/block/${categoryBlocks[id]}.png`;
   }
 
-  if (overrides[id]) {
-    return `${repoBase}/${overrides[id]}`;
-  }
-
-  // Standard item path for all other Bukkit materials
-  return `${repoBase}/items/${id}.png`;
+  const filename = itemOverrides[id] || id;
+  
+  // Dynamic switch between item and block folders
+  // Most rank/item strings are items. If it ends with _block, it's a block.
+  const folder = id.endsWith('_block') ? 'block' : 'item';
+  return `${mcAssetBase}/${folder}/${filename}.png`;
 };
