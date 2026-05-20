@@ -40,8 +40,9 @@ export const getMcIcon = (type: string) => {
     'clock': { folder: 'item', file: 'clock_00' },
     'recovery_compass': { folder: 'item', file: 'recovery_compass_00' },
     'experience_bottle': { folder: 'item', file: 'experience_bottle' },
-    'shield': { folder: 'item', file: 'shield' },
-    'enchanted_golden_apple': { folder: 'item', file: 'enchanted_golden_apple' },
+    'shield': { folder: 'item', file: 'iron_chestplate' }, // Fallback for 3D item
+    'enchanted_golden_apple': { folder: 'item', file: 'golden_apple' }, // Fallback for missing sprite
+    'respawn_anchor': { folder: 'block', file: 'respawn_anchor_top' },
     'totem_of_undying': { folder: 'item', file: 'totem_of_undying' },
     'totem': { folder: 'item', file: 'totem_of_undying' },
   };
