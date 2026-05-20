@@ -104,7 +104,7 @@ export default function MatchModal({ isOpen, onClose, match }: MatchModalProps) 
         <div className="p-8 border-t border-zinc-800/50 flex justify-between items-center bg-zinc-900/10">
             <div className="flex flex-col gap-1">
                 <span className="text-[9px] font-black text-zinc-700 uppercase tracking-[0.5em]">Session Hash: {match.id.substring(0, 8)}</span>
-                <span className="text-[7px] font-black text-zinc-800 uppercase tracking-widest opacity-30">Deployment: V3.3.ULTRA_SYNC</span>
+                <span className="text-[7px] font-black text-zinc-800 uppercase tracking-widest opacity-30">Deployment: V3.4.PRISMARINE_SYNC</span>
             </div>
             <span className="text-[9px] font-black text-zinc-700 uppercase tracking-widest">{new Date(match.createdAt).toLocaleString()}</span>
         </div>

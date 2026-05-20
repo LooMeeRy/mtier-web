@@ -6,57 +6,48 @@ export const getMcIcon = (type: string) => {
   if (!type || type.toLowerCase() === 'air') return `https://raw.githubusercontent.com/PrismarineJS/minecraft-assets/master/data/1.21.1/items/barrier.png`;
 
   let id = type.toLowerCase();
-  const mcAssetBase = `https://mcasset.cloud/1.21.1/assets/minecraft/textures`;
   
-  // Mapping for Category Blocks (Top view for 2D feel)
-  const categoryBlocks: Record<string, string> = {
-    'survival': 'grass_block_top',
-    'bridge': 'oak_planks',
-    'stone': 'stone',
+  // Industry Standard: PrismarineJS assets are 100% hotlink-friendly and stable
+  const base = `https://raw.githubusercontent.com/PrismarineJS/minecraft-assets/master/data/1.21.1`;
+  
+  // Mapping for Dashboard & Ranks (Using blocks for a solid look)
+  const blockMapping: Record<string, string> = {
     'wood': 'oak_log',
-    'gold_block': 'gold_block',
-    'netherite_block': 'netherite_block',
-    'diamond_block': 'diamond_block',
-    'emerald_block': 'emerald_block',
-    'global': 'grass_block_top', 
+    'stone': 'stone',
+    'copper': 'copper_block',
+    'iron': 'iron_block',
+    'gold': 'gold_block',
+    'emerald': 'emerald_block',
+    'amethyst': 'amethyst_block',
+    'diamond': 'diamond_block',
+    'netherite': 'netherite_block',
+    'netherstar': 'nether_star', // Item
+    'bridge': 'oak_planks',
+    'pvp': 'diamond_sword', // Item
+    'survival': 'grass_block_top',
+    'global': 'grass_block_top',
+    'authorization': 'command_block',
+    'assigned sector': 'compass',
   };
 
-  // Explicit Item Mapping for Bukkit -> Minecraft Asset Name
+  // Explicit Item Mapping for Bukkit -> Asset Filename
   const itemOverrides: Record<string, string> = {
-    'pvp': 'diamond_sword',
     'manhunt': 'compass',
-    'netherstar': 'nether_star',
     'empty_map': 'map',
     'book_and_quill': 'writable_book',
-    'clock': 'clock',
-    'recovery_compass': 'recovery_compass',
     'experience_bottle': 'experience_bottle',
-    'enchanted_golden_apple': 'golden_apple',
+    'enchanted_golden_apple': 'enchanted_golden_apple',
     'golden_apple': 'golden_apple',
-    'golden_sword': 'golden_sword',
-    'golden_axe': 'golden_axe',
-    'golden_pickaxe': 'golden_pickaxe',
-    'golden_shovel': 'golden_shovel',
-    'golden_hoe': 'golden_hoe',
-    'golden_helmet': 'golden_helmet',
-    'golden_chestplate': 'golden_chestplate',
-    'golden_leggings': 'golden_leggings',
-    'golden_boots': 'golden_boots',
-    'wooden_sword': 'wooden_sword',
-    'wooden_axe': 'wooden_axe',
-    'wooden_pickaxe': 'wooden_pickaxe',
-    'wooden_shovel': 'wooden_shovel',
-    'wooden_hoe': 'wooden_hoe',
   };
 
-  if (categoryBlocks[id]) {
-    return `${mcAssetBase}/block/${categoryBlocks[id]}.png`;
-  }
+  const target = blockMapping[id] || itemOverrides[id] || id;
 
-  const filename = itemOverrides[id] || id;
-  
-  // Dynamic switch between item and block folders
-  // Most rank/item strings are items. If it ends with _block, it's a block.
-  const folder = id.endsWith('_block') ? 'block' : 'item';
-  return `${mcAssetBase}/${folder}/${filename}.png`;
+  // Determine if it's a block or item based on our mapping or name
+  const isBlock = [
+    'wood', 'stone', 'copper', 'iron', 'gold', 'emerald', 'amethyst', 'diamond', 'netherite',
+    'bridge', 'survival', 'global', 'authorization'
+  ].includes(id) || target.includes('_block') || target.includes('_log') || target.includes('_planks') || target === 'stone';
+
+  const folder = isBlock ? 'blocks' : 'items';
+  return `${base}/${folder}/${target}.png`;
 };
