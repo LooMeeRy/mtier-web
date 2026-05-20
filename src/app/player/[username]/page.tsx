@@ -5,6 +5,7 @@ import SearchBar from "@/app/components/SearchBar";
 import SkinViewer from "@/app/components/SkinViewer";
 import PlayerAnalytics from "@/app/components/PlayerAnalytics";
 import { getMcIcon } from "@/lib/minecraft-icons";
+import McBlock3D from "@/app/components/McBlock3D";
 
 export const dynamic = 'force-dynamic';
 
@@ -65,14 +66,14 @@ export default async function PlayerProfile({
                 </div>
                 <div className="pt-6 border-t border-zinc-800/50 grid grid-cols-2 gap-4 text-center">
                     <div className="flex flex-col items-center gap-2">
-                        <img src={getMcIcon('Experience_Bottle')} className="w-6 h-6 object-contain mc-icon opacity-80" alt="" />
+                        <img src={getMcIcon('experience_bottle')} className="w-6 h-6 object-contain mc-icon opacity-80" alt="" />
                         <div>
                             <p className="text-[8px] font-black text-zinc-700 uppercase tracking-tighter mb-0.5">Authorization</p>
                             <p className="text-xs font-black text-orange-500 italic">Lvl 4</p>
                         </div>
                     </div>
                     <div className="flex flex-col items-center gap-2">
-                        <img src={getMcIcon('Empty_Map')} className="w-6 h-6 object-contain mc-icon opacity-80" alt="" />
+                        <img src={getMcIcon('empty_map')} className="w-6 h-6 object-contain mc-icon opacity-80" alt="" />
                         <div>
                             <p className="text-[8px] font-black text-zinc-700 uppercase tracking-tighter mb-0.5">Assigned Sector</p>
                             <p className="text-xs font-black text-zinc-300 italic">Global</p>
@@ -83,12 +84,12 @@ export default async function PlayerProfile({
               <div className="bento-card p-6 space-y-4">
                 <div className="flex items-center justify-between">
                     <h3 className="text-[10px] font-black text-zinc-700 uppercase tracking-[0.3em]">Log History</h3>
-                    <img src={getMcIcon('Book_and_Quill')} className="w-5 h-5 object-contain mc-icon opacity-40" alt="" />
+                    <img src={getMcIcon('book_and_quill')} className="w-5 h-5 object-contain mc-icon opacity-40" alt="" />
                 </div>
                 <div className="space-y-4">
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center shadow-inner">
-                            <img src={getMcIcon('Clock')} className="w-5 h-5 object-contain mc-icon" alt="" />
+                            <img src={getMcIcon('clock')} className="w-5 h-5 object-contain mc-icon" alt="" />
                         </div>
                         <div>
                             <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Entry Date</p>
@@ -97,7 +98,7 @@ export default async function PlayerProfile({
                     </div>
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center shadow-inner">
-                            <img src={getMcIcon('Recovery_Compass')} className="w-5 h-5 object-contain mc-icon" alt="" />
+                            <img src={getMcIcon('recovery_compass')} className="w-5 h-5 object-contain mc-icon" alt="" />
                         </div>
                         <div>
                             <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Last Activity</p>
@@ -113,8 +114,8 @@ export default async function PlayerProfile({
                   const rankStyle = formatRank(tier.rank, tier.winsAfterNS);
                   return (
                     <div key={tier.id} className="bento-card p-6 flex flex-col justify-between group relative overflow-hidden transition-all hover:bg-[#16161a]">
-                      <div className="absolute -right-6 -top-6 w-32 h-32 opacity-[0.03] group-hover:opacity-[0.12] transition-all duration-700 transform group-hover:rotate-12 group-hover:scale-125">
-                         <img src={getMcIcon(tier.gamemode)} className="w-full h-full object-contain mc-icon" alt="" />
+                      <div className="absolute -right-12 -top-12 opacity-[0.03] group-hover:opacity-[0.12] transition-all duration-700 transform group-hover:rotate-12 group-hover:scale-125">
+                         <McBlock3D name={tier.rank} size={160} />
                       </div>
                       <div>
                         <div className="flex items-center gap-2 mb-6">
@@ -122,10 +123,10 @@ export default async function PlayerProfile({
                             <h3 className="text-[9px] text-zinc-700 uppercase font-black tracking-[0.4em]">{tier.gamemode} Sector</h3>
                         </div>
                         <div className="flex items-center gap-4">
-                            <img 
-                              src={getMcIcon(tier.rank)} 
-                              className="w-12 h-12 object-contain mc-icon animate-float animate-pulse-glow rank-icon-hover drop-shadow-[0_0_10px_rgba(0,0,0,0.8)]" 
-                              alt="" 
+                            <McBlock3D 
+                              name={tier.rank} 
+                              size={48}
+                              className="animate-float rank-icon-hover drop-shadow-[0_0_10px_rgba(0,0,0,0.8)]" 
                             />
                             <p className={`text-4xl font-black italic tracking-tighter uppercase font-display ${rankStyle.color} drop-shadow-sm`}>{rankStyle.label || tier.rank}</p>
                         </div>

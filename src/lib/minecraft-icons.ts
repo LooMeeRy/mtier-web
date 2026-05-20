@@ -37,6 +37,11 @@ export const getMcIcon = (type: string) => {
     'authorization': { folder: 'item', file: 'experience_bottle' },
     'assigned_sector': { folder: 'item', file: 'map' },
     'assigned sector': { folder: 'item', file: 'map' },
+    'empty_map': { folder: 'item', file: 'map' },
+    'book_and_quill': { folder: 'item', file: 'writable_book' },
+    'clock': { folder: 'item', file: 'clock_00' },
+    'recovery_compass': { folder: 'item', file: 'recovery_compass_00' },
+    'experience_bottle': { folder: 'item', file: 'experience_bottle' },
   };
 
   if (UI_MAPPING[id]) {
