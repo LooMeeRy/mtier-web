@@ -12,9 +12,7 @@ export const getMcIcon = (type: string) => {
   // Standardize: lowercase, replace spaces with underscores
   let id = type.toLowerCase()
     .trim()
-    .replace(/\s+/g, '_')
-    .replace('golden_', 'gold_')
-    .replace('wooden_', 'wood_');
+    .replace(/\s+/g, '_');
   
   const base = `/mc-assets`;
 
@@ -42,6 +40,10 @@ export const getMcIcon = (type: string) => {
     'clock': { folder: 'item', file: 'clock_00' },
     'recovery_compass': { folder: 'item', file: 'recovery_compass_00' },
     'experience_bottle': { folder: 'item', file: 'experience_bottle' },
+    'shield': { folder: 'item', file: 'shield' },
+    'enchanted_golden_apple': { folder: 'item', file: 'enchanted_golden_apple' },
+    'totem_of_undying': { folder: 'item', file: 'totem_of_undying' },
+    'totem': { folder: 'item', file: 'totem_of_undying' },
   };
 
   if (UI_MAPPING[id]) {
