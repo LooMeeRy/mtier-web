@@ -122,20 +122,20 @@ export default async function PlayerProfile({
                             <img src={getMcIcon(tier.gamemode)} className="w-4 h-4 object-contain mc-icon drop-shadow-md" alt="" />
                             <h3 className="text-[9px] text-zinc-700 uppercase font-black tracking-[0.4em]">{tier.gamemode} Sector</h3>
                         </div>
-                        <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-8">
                             <div className="shrink-0">
                                 <McBlock3D 
                                   name={tier.rank} 
-                                  size={44}
-                                  className="animate-float rank-icon-hover drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]" 
+                                  size={80}
+                                  className="animate-float rank-icon-hover drop-shadow-[0_20px_40px_rgba(0,0,0,0.6)]" 
                                 />
                             </div>
-                            <p className={`text-5xl font-black italic tracking-tighter uppercase font-display ${rankStyle.color} drop-shadow-sm`}>
+                            <p className={`text-6xl font-black italic tracking-tighter uppercase font-display ${rankStyle.color} drop-shadow-sm`}>
                                 {rankStyle.label || tier.rank}
                             </p>
                         </div>
                       </div>
-                      <div className="flex items-end justify-between mt-12">
+                      <div className="flex items-end justify-between mt-16">
                         <div className="space-y-1">
                             <p className="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Combat Rating</p>
                             <p className="text-2xl font-mono font-black text-zinc-200 tabular-nums italic">{tier.mmr.toLocaleString()}</p>
