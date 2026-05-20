@@ -7,12 +7,12 @@ export const getMcIcon = (type: string) => {
 
   let id = type.toLowerCase();
   
-  // Faithful-Pack is a reliable 1:1 mirror of vanilla assets
-  const officialBase = `https://raw.githubusercontent.com/Faithful-Pack/Default-Java/1.21.1/assets/minecraft/textures`;
+  // Base for individual high-quality textures from 1.21.1
+  const officialBase = `https://raw.githubusercontent.com/misode/mcmeta/1.21.1-assets/assets/minecraft/textures`;
   
-  // Mapping for 3D Blocks (Manual Overrides for categories)
+  // Mapping for 3D Blocks (Using representative top/side textures)
   const blocks: Record<string, string> = {
-    'survival': 'grass_block',
+    'survival': 'grass_block_top',
     'bridge': 'oak_planks',
     'stone': 'stone',
     'wood': 'oak_log',
@@ -20,11 +20,10 @@ export const getMcIcon = (type: string) => {
     'netherite_block': 'netherite_block',
     'diamond_block': 'diamond_block',
     'emerald_block': 'emerald_block',
-    'global': 'grass_block', 
+    'global': 'grass_block_top', 
   };
 
   // Explicit Item Mapping for Bukkit -> Asset Filename
-  // Minecraft 1.21.1 uses 'golden_sword', 'apple', etc.
   const itemOverrides: Record<string, string> = {
     'pvp': 'diamond_sword',
     'manhunt': 'compass',
@@ -34,8 +33,17 @@ export const getMcIcon = (type: string) => {
     'clock': 'clock_00',
     'recovery_compass': 'recovery_compass_00',
     'experience_bottle': 'experience_bottle',
-    'enchanted_golden_apple': 'golden_apple',
+    'enchanted_golden_apple': 'enchanted_golden_apple',
     'golden_apple': 'golden_apple',
+    'golden_sword': 'golden_sword',
+    'golden_axe': 'golden_axe',
+    'golden_pickaxe': 'golden_pickaxe',
+    'golden_shovel': 'golden_shovel',
+    'golden_hoe': 'golden_hoe',
+    'golden_helmet': 'golden_helmet',
+    'golden_chestplate': 'golden_chestplate',
+    'golden_leggings': 'golden_leggings',
+    'golden_boots': 'golden_boots',
   };
 
   if (blocks[id]) {
