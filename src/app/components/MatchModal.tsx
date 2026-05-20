@@ -104,7 +104,7 @@ export default function MatchModal({ isOpen, onClose, match }: MatchModalProps) 
         <div className="p-8 border-t border-zinc-800/50 flex justify-between items-center bg-zinc-900/10">
             <div className="flex flex-col gap-1">
                 <span className="text-[9px] font-black text-zinc-700 uppercase tracking-[0.5em]">Session Hash: {match.id.substring(0, 8)}</span>
-                <span className="text-[7px] font-black text-zinc-800 uppercase tracking-widest opacity-30">Deployment: V2.8.FINAL_ICON_SYNC</span>
+                <span className="text-[7px] font-black text-zinc-800 uppercase tracking-widest opacity-30">Deployment: V3.0.PRO_RENDER_SYNC</span>
             </div>
             <span className="text-[9px] font-black text-zinc-700 uppercase tracking-widest">{new Date(match.createdAt).toLocaleString()}</span>
         </div>
@@ -202,7 +202,7 @@ function PvpDetails({ details }: { details: any }) {
             <div className="bento-card p-6 border-zinc-800/50 flex items-center justify-between">
                 <div className="flex items-center gap-6">
                     <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden flex items-center justify-center">
-                        <img src={`https://mc-heads.net/head/${loser?.name || 'Steve'}/64`} className="object-contain w-[70%] h-[70%]" alt="" />
+                        <img src={`https://crafatar.com/renders/head/${loser?.name || 'Steve'}?overlay&scale=4`} className="object-contain w-full h-full" alt="" />
                     </div>
                     <div>
                         <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-1">Target Neutralized</p>
@@ -220,7 +220,7 @@ function BridgePlayerRow({ player, color }: { player: BridgeDetail, color: strin
     return (
         <div className="p-4 rounded-2xl bg-zinc-900/30 border border-zinc-800/50 flex items-center justify-between group hover:bg-zinc-900/50 transition-all">
             <div className="flex items-center gap-4">
-                <img src={`https://mc-heads.net/head/${player.name}/40`} className="w-10 h-10 rounded-lg bg-zinc-800 border border-zinc-700" alt="" />
+                <img src={`https://crafatar.com/renders/head/${player.name}?overlay&scale=4`} className="w-10 h-10 rounded-lg bg-zinc-800 border border-zinc-700" alt="" />
                 <div>
                     <p className="text-sm font-black text-zinc-100 tracking-tighter italic uppercase">{player.name}</p>
                 </div>
