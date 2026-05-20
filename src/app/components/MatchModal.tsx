@@ -207,10 +207,10 @@ function PvpDetails({ details, opponent }: { details: any, opponent?: string }) 
 
                 {/* Loser Loadout */}
                 <div className="space-y-6">
-                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest border-l-2 border-zinc-700 pl-4">Engaged Arsenal » {loser?.name || 'Loser'}</span>
-                    <div className="grid grid-cols-6 gap-2 p-6 rounded-3xl bg-zinc-900/30 border border-zinc-800/50 min-h-[160px]">
+                    <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest border-l-2 border-blue-500 pl-4">Engaged Arsenal » {loser?.name || 'Loser'}</span>
+                    <div className="grid grid-cols-6 gap-2 p-6 rounded-3xl bg-blue-500/[0.02] border border-blue-500/10 min-h-[160px]">
                         {loser?.loadout?.length > 0 ? loser.loadout.map((item: string, i: number) => (
-                            <div key={i} className="aspect-square flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-xl p-2 group hover:border-zinc-500/20 transition-all shadow-inner relative">
+                            <div key={i} className="aspect-square flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-xl p-2 group hover:border-blue-500/20 transition-all shadow-inner relative">
                                 <img 
                                     src={getMcIcon(item)} 
                                     className="w-full h-full object-contain mc-icon opacity-80" 
