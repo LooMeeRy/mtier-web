@@ -9,8 +9,8 @@ interface McBlock3DProps {
 }
 
 /**
- * Minecraft Future-Proof Renderer (V3.27)
- * Comprehensive mapping for all rank types (Blocks vs Items).
+ * Minecraft Future-Proof Renderer (V3.29)
+ * Corrected tiling and face rendering.
  */
 export default function McBlock3D({ name, size = 64, className = "" }: McBlock3DProps) {
   const baseName = name.toLowerCase().replace(/\s+/g, '_');
@@ -72,12 +72,12 @@ export default function McBlock3D({ name, size = 64, className = "" }: McBlock3D
       >
         {textures.isBlock ? (
           <>
-            <div className="absolute inset-0 mc-icon" style={{ backgroundImage: `url(${textures.side})`, backgroundSize: '100% 100%', transform: `translateZ(${offset}px)`, filter: 'brightness(1)', border: '0.5px solid rgba(0,0,0,0.1)' }} />
-            <div className="absolute inset-0 mc-icon" style={{ backgroundImage: `url(${textures.side})`, backgroundSize: '100% 100%', transform: `rotateY(180deg) translateZ(${offset}px)`, filter: 'brightness(0.6)' }} />
-            <div className="absolute inset-0 mc-icon" style={{ backgroundImage: `url(${textures.side})`, backgroundSize: '100% 100+%', transform: `rotateY(90deg) translateZ(${offset}px)`, filter: 'brightness(0.8)' }} />
-            <div className="absolute inset-0 mc-icon" style={{ backgroundImage: `url(${textures.side})`, backgroundSize: '100% 100%', transform: `rotateY(-90deg) translateZ(${offset}px)`, filter: 'brightness(0.9)' }} />
-            <div className="absolute inset-0 mc-icon" style={{ backgroundImage: `url(${textures.top})`, backgroundSize: '100% 100%', transform: `rotateX(90deg) translateZ(${offset}px)`, filter: 'brightness(1.1)' }} />
-            <div className="absolute inset-0 mc-icon" style={{ backgroundImage: `url(${textures.bottom})`, backgroundSize: '100% 100%', transform: `rotateX(-90deg) translateZ(${offset}px)`, filter: 'brightness(0.4)' }} />
+            <div className="absolute inset-0 mc-icon" style={{ backgroundImage: `url(${textures.side})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', transform: `translateZ(${offset}px)`, filter: 'brightness(1)', border: '0.5px solid rgba(0,0,0,0.1)' }} />
+            <div className="absolute inset-0 mc-icon" style={{ backgroundImage: `url(${textures.side})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', transform: `rotateY(180deg) translateZ(${offset}px)`, filter: 'brightness(0.6)' }} />
+            <div className="absolute inset-0 mc-icon" style={{ backgroundImage: `url(${textures.side})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', transform: `rotateY(90deg) translateZ(${offset}px)`, filter: 'brightness(0.8)' }} />
+            <div className="absolute inset-0 mc-icon" style={{ backgroundImage: `url(${textures.side})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', transform: `rotateY(-90deg) translateZ(${offset}px)`, filter: 'brightness(0.9)' }} />
+            <div className="absolute inset-0 mc-icon" style={{ backgroundImage: `url(${textures.top})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', transform: `rotateX(90deg) translateZ(${offset}px)`, filter: 'brightness(1.1)' }} />
+            <div className="absolute inset-0 mc-icon" style={{ backgroundImage: `url(${textures.bottom})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', transform: `rotateX(-90deg) translateZ(${offset}px)`, filter: 'brightness(0.4)' }} />
           </>
         ) : (
           <div 

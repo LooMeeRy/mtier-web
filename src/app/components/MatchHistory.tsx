@@ -52,6 +52,14 @@ export default function MatchHistory({ matches, mode, onMatchClick }: MatchHisto
                 </td>
                 
                 <td className="px-8 py-6">
+                    <p className="text-[9px] font-black text-zinc-700 uppercase tracking-widest mb-1">Combatant</p>
+                    <div className="flex items-center gap-2">
+                        <img src={`https://mc-heads.net/avatar/${match.opponent}/16`} className="w-4 h-4 rounded-sm bg-zinc-900" alt="" />
+                        <p className="text-xs font-black text-zinc-300 italic uppercase tracking-tighter">{match.opponent}</p>
+                    </div>
+                </td>
+
+                <td className="px-8 py-6">
                     <p className="text-[9px] font-black text-zinc-700 uppercase tracking-widest mb-1">Squad Type</p>
                     <p className="text-xs font-black text-orange-500 italic uppercase tracking-tighter">{match.matchType}</p>
                 </td>
