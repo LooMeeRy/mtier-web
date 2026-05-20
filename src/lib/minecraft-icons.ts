@@ -49,7 +49,7 @@ export const getMcIcon = (type: string) => {
   };
 
   if (UI_MAPPING[id]) {
-    return `${base}/${UI_MAPPING[id].folder}/${UI_MAPPING[id].file}.png`;
+    return `${base}/${UI_MAPPING[id].folder}/${UI_MAPPING[id].file}.png?v=3`;
   }
 
   // 2. Intelligent Folder Switching
@@ -66,5 +66,5 @@ export const getMcIcon = (type: string) => {
 
   const folder = isBlock ? 'block' : 'item';
   
-  return `${base}/${folder}/${id}.png`;
+  return `${base}/${folder}/${id}.png?v=3`;
 };

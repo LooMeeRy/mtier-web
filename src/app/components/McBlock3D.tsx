@@ -9,8 +9,8 @@ interface McBlock3DProps {
 }
 
 /**
- * Minecraft 3D Block Renderer (Isometric Cube)
- * High-fidelity 3D reconstruction using pure CSS.
+ * Minecraft 3D Block Renderer (Final Geometry)
+ * Uses a robust wrapper system to ensure faces are perfectly aligned.
  */
 export default function McBlock3D({ name, size = 64, className = "" }: McBlock3DProps) {
   const baseName = name.toLowerCase().replace(/\s+/g, '_');
@@ -33,24 +33,28 @@ export default function McBlock3D({ name, size = 64, className = "" }: McBlock3D
   };
 
   const textures = getTextures(baseName);
+  const halfSize = size / 2;
 
   return (
     <div 
-      className={`relative ${className}`}
+      className={`relative flex items-center justify-center ${className}`}
       style={{ 
         width: size, 
         height: size,
         perspective: '1000px',
-        display: 'inline-block'
       }}
     >
+      {/* Glow Effect to confirm update */}
+      <div className="absolute inset-0 bg-orange-500/10 blur-2xl rounded-full opacity-50"></div>
+
       <div 
-        className="relative w-full h-full"
+        className="relative"
         style={{
-            transform: 'rotateX(-30deg) rotateY(45deg)',
+            width: size,
+            height: size,
             transformStyle: 'preserve-3d',
-            width: '100%',
-            height: '100%'
+            transform: 'rotateX(-30deg) rotateY(45deg)',
+            transition: 'transform 0.5s ease-out'
         }}
       >
         {/* TOP FACE */}
@@ -60,37 +64,37 @@ export default function McBlock3D({ name, size = 64, className = "" }: McBlock3D
             width: size,
             height: size,
             backgroundImage: `url(${textures.top})`,
-            backgroundSize: 'cover',
-            transform: `rotateX(90deg) translateZ(${size / 2}px)`,
-            boxShadow: 'inset 0 0 15px rgba(255,255,255,0.1)'
+            backgroundSize: '100% 100%',
+            transform: `rotateX(90deg) translateZ(${halfSize}px)`,
+            boxShadow: 'inset 0 0 10px rgba(255,255,255,0.2)',
           }}
         />
         
-        {/* FRONT FACE (LEFT-ish) */}
+        {/* FRONT FACE (LEFT-ish in Isometric) */}
         <div 
           className="absolute mc-icon"
           style={{
             width: size,
             height: size,
             backgroundImage: `url(${textures.side})`,
-            backgroundSize: 'cover',
-            transform: `rotateY(0deg) translateZ(${size / 2}px)`,
+            backgroundSize: '100% 100%',
+            transform: `rotateY(0deg) translateZ(${halfSize}px)`,
             filter: 'brightness(0.9)',
-            boxShadow: 'inset 0 0 15px rgba(0,0,0,0.2)'
+            boxShadow: 'inset 0 0 15px rgba(0,0,0,0.3)',
           }}
         />
 
-        {/* RIGHT FACE (RIGHT-ish) */}
+        {/* RIGHT FACE (RIGHT-ish in Isometric) */}
         <div 
           className="absolute mc-icon"
           style={{
             width: size,
             height: size,
             backgroundImage: `url(${textures.side})`,
-            backgroundSize: 'cover',
-            transform: `rotateY(90deg) translateZ(${size / 2}px)`,
+            backgroundSize: '100% 100%',
+            transform: `rotateY(90deg) translateZ(${halfSize}px)`,
             filter: 'brightness(0.7)',
-            boxShadow: 'inset 0 0 20px rgba(0,0,0,0.4)'
+            boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)',
           }}
         />
       </div>
