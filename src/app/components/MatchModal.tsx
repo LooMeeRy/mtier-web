@@ -104,7 +104,7 @@ export default function MatchModal({ isOpen, onClose, match }: MatchModalProps) 
         <div className="p-8 border-t border-zinc-800/50 flex justify-between items-center bg-zinc-900/10">
             <div className="flex flex-col gap-1">
                 <span className="text-[9px] font-black text-zinc-700 uppercase tracking-[0.5em]">Session Hash: {match.id.substring(0, 8)}</span>
-                <span className="text-[7px] font-black text-zinc-800 uppercase tracking-widest opacity-30">Deployment: V2.7.CRAFATAR_STABLE</span>
+                <span className="text-[7px] font-black text-zinc-800 uppercase tracking-widest opacity-30">Deployment: V2.8.FINAL_ICON_SYNC</span>
             </div>
             <span className="text-[9px] font-black text-zinc-700 uppercase tracking-widest">{new Date(match.createdAt).toLocaleString()}</span>
         </div>
@@ -188,7 +188,7 @@ function PvpDetails({ details }: { details: any }) {
                     <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest border-l-2 border-zinc-700 pl-4">Engaged Arsenal » {loser?.name || 'Loser'}</span>
                     <div className="grid grid-cols-6 gap-2 p-6 rounded-3xl bg-zinc-900/30 border border-zinc-800/50 min-h-[160px]">
                         {loser?.loadout?.length > 0 ? loser.loadout.map((item: string, i: number) => (
-                            <div key={i} className="aspect-square flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-xl p-2 group hover:border-zinc-500/20 transition-all shadow-inner grayscale opacity-70">
+                            <div key={i} className="aspect-square flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-xl p-2 group hover:border-zinc-500/20 transition-all opacity-80">
                                 <img src={getMcIcon(item)} className="w-full h-full object-contain mc-icon" title={item} alt="" />
                             </div>
                         )) : (
@@ -201,8 +201,8 @@ function PvpDetails({ details }: { details: any }) {
             {/* Engagement Status */}
             <div className="bento-card p-6 border-zinc-800/50 flex items-center justify-between">
                 <div className="flex items-center gap-6">
-                    <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-inner flex items-center justify-center">
-                        <img src={`https://crafatar.com/avatars/${loser?.name || 'Steve'}?size=64&overlay`} className="object-contain w-[80%] h-[80%]" alt="" />
+                    <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden flex items-center justify-center">
+                        <img src={`https://mc-heads.net/head/${loser?.name || 'Steve'}/64`} className="object-contain w-[70%] h-[70%]" alt="" />
                     </div>
                     <div>
                         <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-1">Target Neutralized</p>
@@ -220,7 +220,7 @@ function BridgePlayerRow({ player, color }: { player: BridgeDetail, color: strin
     return (
         <div className="p-4 rounded-2xl bg-zinc-900/30 border border-zinc-800/50 flex items-center justify-between group hover:bg-zinc-900/50 transition-all">
             <div className="flex items-center gap-4">
-                <img src={`https://crafatar.com/avatars/${player.name}?size=40&overlay`} className="w-10 h-10 rounded-lg bg-zinc-800 border border-zinc-700" alt="" />
+                <img src={`https://mc-heads.net/head/${player.name}/40`} className="w-10 h-10 rounded-lg bg-zinc-800 border border-zinc-700" alt="" />
                 <div>
                     <p className="text-sm font-black text-zinc-100 tracking-tighter italic uppercase">{player.name}</p>
                 </div>
