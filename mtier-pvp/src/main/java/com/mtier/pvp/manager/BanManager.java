@@ -226,12 +226,20 @@ public class BanManager {
             if (p1 != null) {
                 p1.closeInventory();
                 
-                // Snapshot Loadout
+                // Snapshot Loadout (Main + Armor + Offhand)
                 room.getOwnerLoadout().clear();
                 for (org.bukkit.inventory.ItemStack item : p1.getInventory().getContents()) {
                     if (item != null && item.getType() != org.bukkit.Material.AIR) {
                         room.getOwnerLoadout().add(item.getType());
                     }
+                }
+                for (org.bukkit.inventory.ItemStack item : p1.getInventory().getArmorContents()) {
+                    if (item != null && item.getType() != org.bukkit.Material.AIR) {
+                        room.getOwnerLoadout().add(item.getType());
+                    }
+                }
+                if (p1.getInventory().getItemInOffHand() != null && p1.getInventory().getItemInOffHand().getType() != org.bukkit.Material.AIR) {
+                    room.getOwnerLoadout().add(p1.getInventory().getItemInOffHand().getType());
                 }
 
                 p1.setGameMode(GameMode.SURVIVAL);
@@ -243,12 +251,20 @@ public class BanManager {
             if (p2 != null) {
                 p2.closeInventory();
                 
-                // Snapshot Loadout
+                // Snapshot Loadout (Main + Armor + Offhand)
                 room.getChallengerLoadout().clear();
                 for (org.bukkit.inventory.ItemStack item : p2.getInventory().getContents()) {
                     if (item != null && item.getType() != org.bukkit.Material.AIR) {
                         room.getChallengerLoadout().add(item.getType());
                     }
+                }
+                for (org.bukkit.inventory.ItemStack item : p2.getInventory().getArmorContents()) {
+                    if (item != null && item.getType() != org.bukkit.Material.AIR) {
+                        room.getChallengerLoadout().add(item.getType());
+                    }
+                }
+                if (p2.getInventory().getItemInOffHand() != null && p2.getInventory().getItemInOffHand().getType() != org.bukkit.Material.AIR) {
+                    room.getChallengerLoadout().add(p2.getInventory().getItemInOffHand().getType());
                 }
 
                 p2.setGameMode(GameMode.SURVIVAL);
