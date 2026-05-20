@@ -54,7 +54,10 @@ export default async function PlayerProfile({
                   </div>
                 </div>
                 <div className="space-y-1">
-                    <h1 className="text-4xl font-black tracking-tighter text-white break-words italic font-display">{player.username}</h1>
+                    <div className="flex items-center justify-center gap-3">
+                        <img src={`https://mc-heads.net/avatar/${player.username}/32`} className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 p-1" alt="" />
+                        <h1 className="text-4xl font-black tracking-tighter text-white break-words italic font-display">{player.username}</h1>
+                    </div>
                     <div className="flex items-center justify-center gap-2">
                         <span className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse"></span>
                         <span className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em]">Verified Registry</span>
