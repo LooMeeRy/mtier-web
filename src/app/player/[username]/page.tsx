@@ -130,12 +130,18 @@ export default async function PlayerProfile({
                                   className="animate-float rank-icon-hover drop-shadow-[0_20px_40px_rgba(0,0,0,0.6)]" 
                                 />
                             </div>
-                            <p className={`text-4xl font-black italic tracking-tighter uppercase font-display ${rankStyle.color} drop-shadow-sm leading-tight max-w-[280px] break-words`}>
-                                {rankStyle.label || tier.rank}
-                            </p>
+                            <div className="min-w-0 flex-1">
+                                <p className={`text-3xl font-black italic tracking-tighter uppercase font-display ${rankStyle.color} drop-shadow-sm leading-none truncate mb-1`}>
+                                    {rankStyle.label || tier.rank}
+                                </p>
+                                <div className="flex items-center gap-1.5 opacity-40">
+                                    <div className="w-1 h-1 bg-current rounded-full"></div>
+                                    <span className="text-[7px] font-black uppercase tracking-[0.3em]">Elite Protocol</span>
+                                </div>
+                            </div>
                         </div>
                       </div>
-                      <div className="flex items-end justify-between mt-16">
+                      <div className="flex items-end justify-between mt-12">
                         <div className="space-y-1">
                             <p className="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Combat Rating</p>
                             <p className="text-2xl font-mono font-black text-zinc-200 tabular-nums italic">{tier.mmr.toLocaleString()}</p>
