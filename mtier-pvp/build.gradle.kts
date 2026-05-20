@@ -11,12 +11,25 @@ repositories {
         name = "papermc-repo"
         url = uri("https://repo.papermc.io/repository/maven-public/")
     }
+    maven {
+        url = uri("https://repo.infernalsuite.com/repository/maven-public/")
+    }
+    maven {
+        url = uri("https://repo.titanvale.net/releases/")
+    }
+    maven {
+        url = uri("https://jitpack.io")
+    }
+    maven {
+        url = uri("https://repo.codemc.io/repository/maven-public/")
+    }
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
-    // Reference the core plugin jar for API access during compilation
-    compileOnly(files("../mtier-plugin/build/libs/mtier-plugin-1.0-SNAPSHOT.jar"))
+    compileOnly("com.infernalsuite.aswm:api:3.0.0-SNAPSHOT")
+    // Reference the core plugin jar
+    compileOnly(files("libs/core.jar"))
 }
 
 tasks {

@@ -31,4 +31,9 @@ public class MTierAPIImpl implements MTierAPI {
     public void openSelector(org.bukkit.entity.Player player) {
         MTierPlugin.getInstance().getMenuManager().openMenu(player);
     }
+
+    @Override
+    public void registerSubCommand(String name, org.bukkit.command.CommandExecutor executor, org.bukkit.command.TabCompleter completer) {
+        MTierPlugin.getInstance().getSubCommands().put(name.toLowerCase(), new MTierPlugin.SubCommand(executor, completer));
+    }
 }

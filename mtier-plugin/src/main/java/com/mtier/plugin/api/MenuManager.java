@@ -72,6 +72,8 @@ public class MenuManager implements Listener {
         if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
         
         Player player = (Player) event.getWhoClicked();
+        player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+        
         String clickedName = event.getCurrentItem().getItemMeta().getDisplayName();
 
         for (GamemodeEntry entry : registeredModes.values()) {

@@ -18,6 +18,14 @@ public class StatsCommand implements CommandExecutor {
             return true;
         }
 
+        // Check for registered subcommands
+        if (args.length > 0) {
+            MTierPlugin.SubCommand sub = MTierPlugin.getInstance().getSubCommands().get(args[0].toLowerCase());
+            if (sub != null) {
+                return sub.executor().onCommand(sender, command, label, args);
+            }
+        }
+
         // /mtier reload
         if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
             if (!sender.hasPermission("mtier.admin")) {

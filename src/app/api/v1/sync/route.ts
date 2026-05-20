@@ -3,13 +3,14 @@ import prisma from "@/lib/prisma";
 
 function getRankFromMMR(mmr: number): string {
     if (mmr >= 4000) return "NetherStar";
-    if (mmr >= 3500) return "Amethyst";
+    if (mmr >= 3500) return "Netherite";
     if (mmr >= 3000) return "Diamond";
-    if (mmr >= 2500) return "Emerald";
-    if (mmr >= 2000) return "Gold";
-    if (mmr >= 1500) return "Iron";
-    if (mmr >= 1000) return "Copper";
-    if (mmr >= 500) return "Stone";
+    if (mmr >= 2500) return "Amethyst";
+    if (mmr >= 2000) return "Emerald";
+    if (mmr >= 1500) return "Gold";
+    if (mmr >= 1000) return "Iron";
+    if (mmr >= 500) return "Copper";
+    if (mmr >= 250) return "Stone";
     return "Wood";
 }
 
@@ -92,9 +93,8 @@ export async function POST(request: Request) {
                 });
             }
 
-            // Simple win/loss MMR change for now
-            // Future: Implement complex Multi-player Elo here based on 'p.placement'
-            const change = p.winner ? 25 : -15;
+            // Use the MMR change from the plugin if available
+            const change = p.stats.mmr_change ?? (p.winner ? 25 : -15);
             const newMmr = Math.max(0, currentTier.mmr + change);
 
             await prisma.tier.update({
@@ -110,13 +110,17 @@ export async function POST(request: Request) {
                     matchType: matchType,
                     result: p.winner ? "WIN" : "LOSS",
                     mmrChange: change,
-                    opponent: "Multiplayer", // Legacy field
+                    opponent: participants.find((other: any) => other.uuid !== p.uuid)?.name ?? "Unknown",
                     duration: duration,
                     detailsJson: JSON.stringify({
                         placement: p.placement,
-                        personalStats: p.stats,
-                        allParticipants: participants.map((all: any) => ({ name: all.name, winner: all.winner })),
-                        metadata: metadata
+                        loadout: p.stats.loadout, // Store this player's snapshot
+                        allParticipants: participants.map((all: any) => ({ 
+                            name: all.name, 
+                            winner: all.winner,
+                            loadout: all.stats.loadout 
+                        })),
+                        metadata: metadata // Includes banned_items
                     })
                 }
             });

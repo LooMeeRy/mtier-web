@@ -15,16 +15,17 @@ public class PlayerListener implements Listener {
         String uuid = event.getPlayer().getUniqueId().toString();
         String username = event.getPlayer().getName();
 
-        // 1. Sync join event (Write-only)
+        // 1. Sync join event first
         MTierPlugin.getInstance().getSyncManager().syncPlayerData(uuid, username, "PLAYER_JOIN", Map.of(
             "ip", event.getPlayer().getAddress().getHostString()
-        ));
-
-        // 2. Fetch stats for cache (Read-only)
-        MTierPlugin.getInstance().getSyncManager().fetchPlayerData(uuid, username).thenAccept(data -> {
-            if (data != null) {
-                MTierPlugin.getInstance().getPlayerCache().put(event.getPlayer().getUniqueId(), data);
-            }
+        )).thenRun(() -> {
+            // 2. ONLY after sync is complete, fetch stats for cache
+            MTierPlugin.getInstance().getSyncManager().fetchPlayerData(uuid, username).thenAccept(data -> {
+                if (data != null) {
+                    MTierPlugin.getInstance().getPlayerCache().put(event.getPlayer().getUniqueId(), data);
+                    MTierPlugin.getInstance().getLogger().info("Successfully loaded Supabase data for " + username);
+                }
+            });
         });
     }
 

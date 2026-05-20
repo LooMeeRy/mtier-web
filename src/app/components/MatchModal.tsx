@@ -141,45 +141,69 @@ function BridgeDetails({ details }: { details: any }) {
 }
 
 function PvpDetails({ details }: { details: any }) {
-    const stats = (details.stats || {}) as PvpStats;
-    const opponent = details.opponentInfo || { name: 'Unknown', rank: 'Unranked', ping: '??' };
+    const bannedItems = (details.metadata?.banned_items || []) as string[];
+    const participants = (details.allParticipants || []) as any[];
+    const winner = participants.find(p => p.winner);
+    const loser = participants.find(p => !p.winner);
 
     return (
-        <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="md:col-span-2 grid grid-cols-2 gap-4">
-                    <PvpStatCard label="Accuracy" value={stats.accuracy} icon="Compass" />
-                    <PvpStatCard label="Combat Hits" value={stats.totalHits} icon="Diamond_Sword" />
-                    <PvpStatCard label="Damage Dealt" value={stats.damageDealt} icon="Redstone_Dust" />
-                    <PvpStatCard label="Avg. CPS" value={stats.avgCps} icon="Clock" />
-                </div>
-                <div className="bento-card p-8 flex flex-col items-center justify-center text-center space-y-6 bg-orange-500/[0.02]">
-                    <div className="space-y-2">
-                        <p className="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Health Remaining</p>
-                        <p className="text-4xl font-black text-red-500 italic tracking-tighter">{stats.healthRemaining || '0.0'}</p>
+        <div className="space-y-12">
+            {/* Banned Items Row */}
+            {bannedItems.length > 0 && (
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-black text-red-500 uppercase tracking-widest pl-4 border-l-2 border-red-500">Protocol Restrictions (Banned)</span>
                     </div>
-                    <img src={getMcIcon('Enchanted_Golden_Apple')} className="w-12 h-12 object-contain mc-icon animate-pulse" alt="" />
+                    <div className="flex flex-wrap gap-2 px-4 py-6 rounded-3xl bg-red-500/[0.02] border border-red-500/10">
+                        {bannedItems.map((item, i) => (
+                            <div key={i} className="w-10 h-10 flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-lg group hover:border-red-500/30 transition-all p-2 grayscale opacity-50 hover:grayscale-0 hover:opacity-100">
+                                <img src={getMcIcon(item)} className="w-full h-full object-contain mc-icon" title={item} alt="" />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Loadouts Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                {/* Winner Loadout */}
+                <div className="space-y-6">
+                    <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest border-l-2 border-emerald-500 pl-4">Tactical Arsenal » {winner?.name || 'Winner'}</span>
+                    <div className="grid grid-cols-6 gap-2 p-6 rounded-3xl bg-emerald-500/[0.02] border border-emerald-500/10 min-h-[160px]">
+                        {(winner?.loadout || []).map((item: string, i: number) => (
+                            <div key={i} className="aspect-square flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-xl p-2 group hover:border-emerald-500/20 transition-all shadow-inner">
+                                <img src={getMcIcon(item)} className="w-full h-full object-contain mc-icon" title={item} alt="" />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Loser Loadout */}
+                <div className="space-y-6">
+                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest border-l-2 border-zinc-700 pl-4">Engaged Arsenal » {loser?.name || 'Loser'}</span>
+                    <div className="grid grid-cols-6 gap-2 p-6 rounded-3xl bg-zinc-900/30 border border-zinc-800/50 min-h-[160px]">
+                        {(loser?.loadout || []).map((item: string, i: number) => (
+                            <div key={i} className="aspect-square flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-xl p-2 group hover:border-zinc-500/20 transition-all shadow-inner grayscale opacity-70">
+                                <img src={getMcIcon(item)} className="w-full h-full object-contain mc-icon" title={item} alt="" />
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
 
+            {/* Engagement Status */}
             <div className="bento-card p-6 border-zinc-800/50 flex items-center justify-between">
                 <div className="flex items-center gap-6">
                     <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-inner">
-                        <img src={`https://mc-heads.net/avatar/${opponent.name}/64`} className="object-cover w-full h-full" alt="" />
+                        <img src={`https://mc-heads.net/avatar/${loser?.name || 'Steve'}/64`} className="object-cover w-full h-full" alt="" />
                     </div>
                     <div>
-                        <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-1">Engaged Opponent</p>
-                        <p className="text-2xl font-black text-white italic tracking-tighter uppercase">{opponent.name}</p>
-                        <div className="flex items-center gap-3 mt-1">
-                            <span className="text-[9px] font-black text-orange-500 uppercase tracking-widest">{opponent.rank} League</span>
-                            <span className="w-1 h-1 bg-zinc-800 rounded-full"></span>
-                            <span className="text-[9px] font-black text-zinc-700 uppercase tracking-widest">Latency: {opponent.ping}</span>
-                        </div>
+                        <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-1">Target Neutralized</p>
+                        <p className="text-2xl font-black text-white italic tracking-tighter uppercase">{loser?.name || 'Unknown Entity'}</p>
+                        <p className="text-[9px] font-black text-zinc-700 uppercase tracking-widest mt-1 italic">Protocol 1v1 Execution Verified</p>
                     </div>
                 </div>
-                <div className="hidden md:block">
-                     <p className="text-[9px] font-black text-zinc-800 uppercase tracking-[0.4em]">Protocol 1v1 Verified</p>
-                </div>
+                <img src={getMcIcon('Iron_Sword')} className="w-8 h-8 object-contain mc-icon opacity-20" alt="" />
             </div>
         </div>
     )

@@ -4,3 +4,8 @@ main: com.mtier.pvp.MTierPvP
 api-version: '1.21'
 depend: [MTierPlugin]
 description: The official PvP gamemode for MTier Pro.
+
+commands:
+  banmenu:
+    description: Open the item ban menu during the ban phase.
+    usage: /banmenu

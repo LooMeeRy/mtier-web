@@ -21,6 +21,9 @@ public class MTierPlugin extends JavaPlugin {
     private MenuManager menuManager;
     private MTierAPI api;
     private final Map<UUID, WebSyncManager.PlayerData> playerCache = new HashMap<>();
+    private final Map<String, SubCommand> subCommands = new HashMap<>();
+
+    public record SubCommand(org.bukkit.command.CommandExecutor executor, org.bukkit.command.TabCompleter completer) {}
 
     @Override
     public void onEnable() {
@@ -83,5 +86,9 @@ public class MTierPlugin extends JavaPlugin {
 
     public Map<UUID, WebSyncManager.PlayerData> getPlayerCache() {
         return playerCache;
+    }
+
+    public Map<String, SubCommand> getSubCommands() {
+        return subCommands;
     }
 }

@@ -37,4 +37,9 @@ public interface MTierAPI {
      * Open the gamemode selector GUI for a player.
      */
     void openSelector(org.bukkit.entity.Player player);
+
+    /**
+     * Register an external subcommand for /mtier.
+     */
+    void registerSubCommand(String name, org.bukkit.command.CommandExecutor executor, org.bukkit.command.TabCompleter completer);
 }
