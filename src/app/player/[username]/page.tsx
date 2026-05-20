@@ -130,7 +130,7 @@ export default async function PlayerProfile({
                                   className="animate-float rank-icon-hover drop-shadow-[0_20px_40px_rgba(0,0,0,0.6)]" 
                                 />
                             </div>
-                            <p className={`text-5xl font-black italic tracking-tighter uppercase font-display ${rankStyle.color} drop-shadow-sm leading-tight max-w-[300px]`}>
+                            <p className={`text-4xl font-black italic tracking-tighter uppercase font-display ${rankStyle.color} drop-shadow-sm leading-tight max-w-[280px] break-words`}>
                                 {rankStyle.label || tier.rank}
                             </p>
                         </div>

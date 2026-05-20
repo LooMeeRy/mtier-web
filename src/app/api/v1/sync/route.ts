@@ -4,8 +4,8 @@ import prisma from "@/lib/prisma";
 function getRankFromMMR(mmr: number): string {
     if (mmr >= 4000) return "NetherStar";
     if (mmr >= 3500) return "Netherite";
-    if (mmr >= 3000) return "Diamond";
-    if (mmr >= 2500) return "Amethyst";
+    if (mmr >= 3000) return "Amethyst";
+    if (mmr >= 2500) return "Diamond";
     if (mmr >= 2000) return "Emerald";
     if (mmr >= 1500) return "Gold";
     if (mmr >= 1000) return "Iron";
