@@ -3,14 +3,14 @@
  * Optimized for High-Quality 3D Block Renders and Sharp 2D Items.
  */
 export const getMcIcon = (type: string) => {
-  if (!type || type.toLowerCase() === 'air') return `https://raw.githubusercontent.com/PrismarineJS/minecraft-assets/master/data/1.21.1/items/barrier.png`;
+  if (!type || type.toLowerCase() === 'air') return `https://cdn.jsdelivr.net/gh/PrismarineJS/minecraft-assets@master/data/1.21.1/items/barrier.png`;
 
   let id = type.toLowerCase();
   
-  // Industry Standard: PrismarineJS assets are 100% hotlink-friendly and stable
-  const base = `https://raw.githubusercontent.com/PrismarineJS/minecraft-assets/master/data/1.21.1`;
+  // Use JsDelivr CDN - Best for speed, CORS, and high-availability
+  const base = `https://cdn.jsdelivr.net/gh/PrismarineJS/minecraft-assets@master/data/1.21.1`;
   
-  // Mapping for Dashboard & Ranks (Using blocks for a solid look)
+  // Mapping for Dashboard & Ranks (Using 1:1 vanilla names)
   const blockMapping: Record<string, string> = {
     'wood': 'oak_log',
     'stone': 'stone',
@@ -21,16 +21,15 @@ export const getMcIcon = (type: string) => {
     'amethyst': 'amethyst_block',
     'diamond': 'diamond_block',
     'netherite': 'netherite_block',
-    'netherstar': 'nether_star', // Item
+    'netherstar': 'nether_star',
     'bridge': 'oak_planks',
-    'pvp': 'diamond_sword', // Item
+    'pvp': 'diamond_sword',
     'survival': 'grass_block_top',
     'global': 'grass_block_top',
     'authorization': 'command_block',
     'assigned sector': 'compass',
   };
 
-  // Explicit Item Mapping for Bukkit -> Asset Filename
   const itemOverrides: Record<string, string> = {
     'manhunt': 'compass',
     'empty_map': 'map',
@@ -38,14 +37,16 @@ export const getMcIcon = (type: string) => {
     'experience_bottle': 'experience_bottle',
     'enchanted_golden_apple': 'enchanted_golden_apple',
     'golden_apple': 'golden_apple',
+    'clock': 'clock_00',
+    'recovery_compass': 'recovery_compass_00',
   };
 
   const target = blockMapping[id] || itemOverrides[id] || id;
 
-  // Determine if it's a block or item based on our mapping or name
+  // Decision logic for folder
   const isBlock = [
     'wood', 'stone', 'copper', 'iron', 'gold', 'emerald', 'amethyst', 'diamond', 'netherite',
-    'bridge', 'survival', 'global', 'authorization'
+    'bridge', 'survival', 'global', 'authorization', 'grass_block', 'oak_log', 'stone_block'
   ].includes(id) || target.includes('_block') || target.includes('_log') || target.includes('_planks') || target === 'stone';
 
   const folder = isBlock ? 'blocks' : 'items';
