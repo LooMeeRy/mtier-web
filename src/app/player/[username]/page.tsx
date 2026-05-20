@@ -114,9 +114,6 @@ export default async function PlayerProfile({
                   const rankStyle = formatRank(tier.rank, tier.winsAfterNS);
                   return (
                     <div key={tier.id} className="bento-card p-6 flex flex-col justify-between group relative overflow-hidden transition-all hover:bg-[#16161a]">
-                      <div className="absolute -right-12 -top-12 opacity-[0.03] group-hover:opacity-[0.12] transition-all duration-700 transform group-hover:rotate-12 group-hover:scale-125">
-                         <McBlock3D name={tier.rank} size={160} />
-                      </div>
                       <div>
                         <div className="flex items-center gap-2 mb-6">
                             <img src={getMcIcon(tier.gamemode)} className="w-4 h-4 object-contain mc-icon drop-shadow-md" alt="" />
@@ -131,13 +128,9 @@ export default async function PlayerProfile({
                                 />
                             </div>
                             <div className="min-w-0 flex-1">
-                                <p className={`text-3xl font-black italic tracking-tighter uppercase font-display ${rankStyle.color} drop-shadow-sm leading-none truncate mb-1`}>
+                                <p className={`text-4xl font-black italic tracking-tighter uppercase font-display ${rankStyle.color} drop-shadow-sm leading-none truncate`}>
                                     {rankStyle.label || tier.rank}
                                 </p>
-                                <div className="flex items-center gap-1.5 opacity-40">
-                                    <div className="w-1 h-1 bg-current rounded-full"></div>
-                                    <span className="text-[7px] font-black uppercase tracking-[0.3em]">Elite Protocol</span>
-                                </div>
                             </div>
                         </div>
                       </div>
